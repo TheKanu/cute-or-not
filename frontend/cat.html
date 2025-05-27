@@ -186,7 +186,7 @@ function updateCountdown() {
   const s = Math.floor((remMs % (60 * 1000)) / 1000);
 
   const pad = n => String(n).padStart(2, '0');
-  disp.textContent = `${days}d ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+  disp.textContent = `0${days}d ${pad(h)}h ${pad(m)}m`;
 }
 
       // Toggle logic
