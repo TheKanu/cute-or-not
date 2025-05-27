@@ -43,6 +43,10 @@
       <span>Vis nedtelling til helg</span>
     </label>
     <label class="flex items-center cursor-pointer">
+      <input type="checkbox" id="toggleSeconds" class="mr-2 w-5 h-5" />
+      <span>OnlySeconds</span>
+    </label>
+    <label class="flex items-center cursor-pointer">
       <input type="checkbox" id="toggleQR" class="mr-2 w-5 h-5" />
       <span>QR-Code for voting</span>
     </label>
@@ -54,7 +58,7 @@
     <div class="text-center relative inline-block">
       <h1 id="catTitle" class="text-5xl font-bold mb-4">Cat Detail</h1>
 
-    <!-- QR-Code Voting Link (links neben dem Bild) -->
+    <!-- QR-Code Voting Link (left of the image) -->
     <div id="voteQR"
         class="hidden absolute right-full mr-6 top-1/2 transform -translate-y-1/2
                 bg-white rounded-lg shadow-lg p-4 text-gray-900 text-center">
@@ -68,7 +72,7 @@
 
       <img id="catImg" src="" alt="" class="mx-auto rounded-lg shadow-lg mb-4 max-h-96"/>
 
-      <!-- Countdown / Weekend Celebration (rechts neben dem Bild) -->
+      <!-- Countdown / Weekend Celebration (right of the image) -->
       <div id="weekendCountdown"
            class="hidden absolute left-full ml-6 top-1/2 transform -translate-y-1/2
                   bg-softbg text-softfg px-6 py-4 rounded-lg shadow-lg text-center">
@@ -83,7 +87,7 @@
   </div>
 
   <script>
-  // Nächsten Freitag 15:30 ermitteln (unverändert)
+  // Get next Friday 15:30 (unchanged)
   function getNextFriday330() {
     const now = new Date();
     const day = now.getDay();
@@ -95,7 +99,7 @@
     return target;
   }
 
-  // Prüfen, ob wir bereits im Feiermodus sind (unverändert)
+  // Check if we are already in celebration mode (unchanged)
   function isWeekendCelebration() {
     const now = new Date();
     const day = now.getDay(), h = now.getHours(), m = now.getMinutes();
@@ -104,7 +108,7 @@
     return false;
   }
 
-  // Berechnet die verbleibende Zeit in "Geschäftsstunden" (8–15:30 Mo–Fr)
+  // Calculates the remaining time in "business hours" (8–15:30 Mon–Fri)
 function getBusinessHourDiff(now, target) {
   const MS = 1000, MIN = 60*MS, HOUR = 60*MIN;
   const WORK_START = 8, WORK_END = 15.5; // 15:30 = 15.5h
@@ -112,12 +116,12 @@ function getBusinessHourDiff(now, target) {
   let totalMs = 0;
   let cur = new Date(now);
 
-  // 1) Auf erstes Arbeitsfenster verschieben
+  // 1) Shift to first business window
   const curHour = cur.getHours() + cur.getMinutes()/60;
   if (curHour < WORK_START) {
     cur.setHours(WORK_START, 0, 0, 0);
   } else if (curHour >= WORK_END || [0,6].includes(cur.getDay())) {
-    // nächster Werktag um 8 Uhr
+    // next business day at 8:00
     do { cur.setDate(cur.getDate()+1); }
     while ([0,6].includes(cur.getDay()));
     cur.setHours(WORK_START,0,0,0);
@@ -125,29 +129,29 @@ function getBusinessHourDiff(now, target) {
 
   const end = new Date(target);
 
-  // 2) Schleife Tag für Tag
+  // 2) Loop day by day
   while (cur < end) {
     if (![0,6].includes(cur.getDay())) {
-      // Tagesarbeitszeit-Beginn und -Ende
+      // Day's business start and end
       const dayStart = new Date(cur);
       dayStart.setHours(WORK_START,0,0,0);
       const dayEnd = new Date(cur);
       dayEnd.setHours(WORK_END,30,0,0); // 15:30:00
 
-      // Schnittmenge [cur, end] ∩ [dayStart, dayEnd]
+      // Intersection [cur, end] ∩ [dayStart, dayEnd]
       const from = new Date(Math.max(cur, dayStart));
       const to   = new Date(Math.min(end, dayEnd));
       if (to > from) {
         totalMs += to - from;
       }
 
-      // 3) Wichtig: cur auf das spätere von (dayEnd, end) setzen
+      // 3) Important: set cur to the later of (dayEnd, from)
       cur = new Date(Math.max(dayEnd, from));
     }
 
-    // 4) Wenn noch Zeit übrig und wir nicht schon im Ziel sind, zum nächsten Arbeitstag
+    // 4) If time remains and we are not at the target, go to next business day
     if (cur < end) {
-      // auf nächsten Werktag 8 Uhr
+      // next business day at 8:00
       do { cur.setDate(cur.getDate()+1); }
       while ([0,6].includes(cur.getDay()));
       cur.setHours(WORK_START,0,0,0);
@@ -170,16 +174,16 @@ function updateCountdown() {
   const target   = getNextFriday330();
   let diffMs     = getBusinessHourDiff(now, target);
 
-  // Länge eines "Geschäftstages" in ms (7,5 h)
+  // Length of a "business day" in ms (7.5 h)
   const FULL_DAY_MS = 7.5 * 60 * 60 * 1000;
 
-  // Anzahl voller 7,5h-Blöcke
+  // Number of full 7.5h blocks
   const days  = Math.floor(diffMs / FULL_DAY_MS);
 
-  // Rest (immer < 7,5 h)
+  // Remainder (always < 7.5 h)
   let remMs    = diffMs % FULL_DAY_MS;
 
-  // Stunden, Minuten, Sekunden aus dem Rest
+  // Hours, minutes, seconds from the remainder
   const h = Math.floor(remMs / (3600 * 1000));
   remMs -= h * 3600 * 1000;
   const m = Math.floor(remMs / (60 * 1000));
@@ -190,33 +194,81 @@ function updateCountdown() {
 }
 
       // Toggle logic
-      document.addEventListener('DOMContentLoaded', () => {
-        const toggleWeekend = document.getElementById('toggleWeekend');
-        const toggleQR      = document.getElementById('toggleQR');
-        const boxCountdown  = document.getElementById('weekendCountdown');
-        const boxQR         = document.getElementById('voteQR');
+document.addEventListener('DOMContentLoaded', () => {
+  const toggleWeekend = document.getElementById('toggleWeekend');
+  const toggleQR      = document.getElementById('toggleQR');
+  const toggleSeconds = document.getElementById('toggleSeconds');  // new
+  const boxCountdown  = document.getElementById('weekendCountdown');
+  const boxQR         = document.getElementById('voteQR');
 
-        const qrImg = boxQR.querySelector('img');
-        qrImg.src   = '/images/qr-code.png';
+  let interval = null;
 
-        let interval = null;
+  // Shared timer setter
+  function startCountdown() {
+    updateCountdown();
+    interval = setInterval(updateCountdown, 1000);
+  }
 
-        toggleWeekend.addEventListener('change', () => {
-          if (toggleWeekend.checked) {
-            boxCountdown.classList.remove('hidden');
-            updateCountdown();
-            interval = setInterval(updateCountdown, 1000);
-          } else {
-            boxCountdown.classList.add('hidden');
-            clearInterval(interval);
-          }
-        });
+  toggleWeekend.addEventListener('change', () => {
+    if (toggleWeekend.checked) {
+      boxCountdown.classList.remove('hidden');
+      startCountdown();
+    } else {
+      boxCountdown.classList.add('hidden');
+      clearInterval(interval);
+    }
+  });
 
-        toggleQR.addEventListener('change', () => {
-          if (toggleQR.checked) boxQR.classList.remove('hidden');
-          else                  boxQR.classList.add('hidden');
-        });
-      });
+  toggleSeconds.addEventListener('change', () => {
+    // If already visible, restart timer so updateCountdown considers the new mode
+    if (toggleWeekend.checked) {
+      clearInterval(interval);
+      startCountdown();
+    }
+  });
+
+  toggleQR.addEventListener('change', () => {
+    if (toggleQR.checked) boxQR.classList.remove('hidden');
+    else                  boxQR.classList.add('hidden');
+  });
+});
+
+function updateCountdown() {
+  const disp      = document.getElementById('countdownText');
+  const now       = new Date();
+  const target    = getNextFriday330();
+
+  // If celebration mode is on
+  if (isWeekendCelebration()) {
+    disp.textContent = 'Hooray!';
+    disp.classList.add('animate-pulseFast');
+    return;
+  }
+  disp.classList.remove('animate-pulseFast');
+
+  // Remaining business time in milliseconds
+  const diffMs    = getBusinessHourDiff(now, target);
+
+  // Seconds toggle?
+  const showSeconds = document.getElementById('toggleSeconds').checked;
+  if (showSeconds) {
+    const secs = Math.floor(diffMs / 1000);
+    disp.textContent = `${secs}s`;
+    return;
+  }
+
+  // Otherwise, default format: Xd Yh Zm
+  const FULL_DAY_MS = 7.5 * 60 * 60 * 1000;
+  const days  = Math.floor(diffMs / FULL_DAY_MS);
+  let remMs   = diffMs % FULL_DAY_MS;
+
+  const h     = Math.floor(remMs / (3600 * 1000));
+  remMs      -= h * 3600 * 1000;
+  const m     = Math.floor(remMs / (60 * 1000));
+
+  const pad = n => String(n).padStart(2, '0');
+  disp.textContent = `0${days}d ${pad(h)}h ${pad(m)}m`;
+}
 
     // Cat detail logic unchanged
     async function loadCat() {
