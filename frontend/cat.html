@@ -66,7 +66,6 @@
         class="mx-auto w-48 h-256" />
     </div>
 
-
       <img id="catImg" src="" alt="" class="mx-auto rounded-lg shadow-lg mb-4 max-h-96"/>
 
       <!-- Countdown / Weekend Celebration (rechts neben dem Bild) -->
@@ -84,50 +83,112 @@
   </div>
 
   <script>
-    // Get next Friday 15:30
-    function getNextFriday330() {
-      const now = new Date();
-      const day = now.getDay();
-      let delta = (5 - day + 7) % 7;
-      const target = new Date(now);
-      target.setDate(now.getDate() + delta);
-      target.setHours(15, 30, 0, 0);
-      if (target <= now) target.setDate(target.getDate() + 7);
-      return target;
-    }
+  // Nächsten Freitag 15:30 ermitteln (unverändert)
+  function getNextFriday330() {
+    const now = new Date();
+    const day = now.getDay();
+    let delta = (5 - day + 7) % 7;
+    const target = new Date(now);
+    target.setDate(now.getDate() + delta);
+    target.setHours(15, 30, 0, 0);
+    if (target <= now) target.setDate(target.getDate() + 7);
+    return target;
+  }
 
-    // Check if it's weekend celebration time
-    function isWeekendCelebration() {
-      const now = new Date();
-      const day = now.getDay();
-      const hour = now.getHours();
-      const minute = now.getMinutes();
-      if (day === 5 && (hour > 15 || (hour === 15 && minute >= 30))) return true;
-      if (day === 6 || day === 0) return true;
-      return false;
-    }
+  // Prüfen, ob wir bereits im Feiermodus sind (unverändert)
+  function isWeekendCelebration() {
+    const now = new Date();
+    const day = now.getDay(), h = now.getHours(), m = now.getMinutes();
+    if (day === 5 && (h > 15 || (h === 15 && m >= 30))) return true;
+    if (day === 6 || day === 0) return true;
+    return false;
+  }
 
-    function updateCountdown() {
-      const display = document.getElementById('countdownText');
-      const now = new Date();
+  // Berechnet die verbleibende Zeit in "Geschäftsstunden" (8–15:30 Mo–Fr)
+function getBusinessHourDiff(now, target) {
+  const MS = 1000, MIN = 60*MS, HOUR = 60*MIN;
+  const WORK_START = 8, WORK_END = 15.5; // 15:30 = 15.5h
 
-      if (isWeekendCelebration()) {
-        display.textContent = 'Hooray – Woosh!';
-        display.classList.add('animate-pulseFast');
-        return;
+  let totalMs = 0;
+  let cur = new Date(now);
+
+  // 1) Auf erstes Arbeitsfenster verschieben
+  const curHour = cur.getHours() + cur.getMinutes()/60;
+  if (curHour < WORK_START) {
+    cur.setHours(WORK_START, 0, 0, 0);
+  } else if (curHour >= WORK_END || [0,6].includes(cur.getDay())) {
+    // nächster Werktag um 8 Uhr
+    do { cur.setDate(cur.getDate()+1); }
+    while ([0,6].includes(cur.getDay()));
+    cur.setHours(WORK_START,0,0,0);
+  }
+
+  const end = new Date(target);
+
+  // 2) Schleife Tag für Tag
+  while (cur < end) {
+    if (![0,6].includes(cur.getDay())) {
+      // Tagesarbeitszeit-Beginn und -Ende
+      const dayStart = new Date(cur);
+      dayStart.setHours(WORK_START,0,0,0);
+      const dayEnd = new Date(cur);
+      dayEnd.setHours(WORK_END,30,0,0); // 15:30:00
+
+      // Schnittmenge [cur, end] ∩ [dayStart, dayEnd]
+      const from = new Date(Math.max(cur, dayStart));
+      const to   = new Date(Math.min(end, dayEnd));
+      if (to > from) {
+        totalMs += to - from;
       }
-      display.classList.remove('animate-pulseFast');
 
-      const target = getNextFriday330();
-      let diff = target - now;
-      if (diff < 0) diff = 0;
-
-      const pad = n => String(n).padStart(2, '0');
-      const h = pad(Math.floor(diff / (1000 * 60 * 60)));
-      const m = pad(Math.floor((diff / (1000 * 60)) % 60));
-      const s = pad(Math.floor((diff / 1000) % 60));
-      display.textContent = `${h}hr ${m}m ${s}s`;
+      // 3) Wichtig: cur auf das spätere von (dayEnd, end) setzen
+      cur = new Date(Math.max(dayEnd, from));
     }
+
+    // 4) Wenn noch Zeit übrig und wir nicht schon im Ziel sind, zum nächsten Arbeitstag
+    if (cur < end) {
+      // auf nächsten Werktag 8 Uhr
+      do { cur.setDate(cur.getDate()+1); }
+      while ([0,6].includes(cur.getDay()));
+      cur.setHours(WORK_START,0,0,0);
+    }
+  }
+
+  return totalMs;
+}
+
+function updateCountdown() {
+  const disp    = document.getElementById('countdownText');
+  if (isWeekendCelebration()) {
+    disp.textContent = 'Hooray!';
+    disp.classList.add('animate-pulseFast');
+    return;
+  }
+  disp.classList.remove('animate-pulseFast');
+
+  const now      = new Date();
+  const target   = getNextFriday330();
+  let diffMs     = getBusinessHourDiff(now, target);
+
+  // Länge eines "Geschäftstages" in ms (7,5 h)
+  const FULL_DAY_MS = 7.5 * 60 * 60 * 1000;
+
+  // Anzahl voller 7,5h-Blöcke
+  const days  = Math.floor(diffMs / FULL_DAY_MS);
+
+  // Rest (immer < 7,5 h)
+  let remMs    = diffMs % FULL_DAY_MS;
+
+  // Stunden, Minuten, Sekunden aus dem Rest
+  const h = Math.floor(remMs / (3600 * 1000));
+  remMs -= h * 3600 * 1000;
+  const m = Math.floor(remMs / (60 * 1000));
+  const s = Math.floor((remMs % (60 * 1000)) / 1000);
+
+  const pad = n => String(n).padStart(2, '0');
+  disp.textContent = `${days}d ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+}
+
       // Toggle logic
       document.addEventListener('DOMContentLoaded', () => {
         const toggleWeekend = document.getElementById('toggleWeekend');
