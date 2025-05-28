@@ -5,7 +5,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
-
 import { query } from './db.js';
 import { saveVote } from './voteService.js';
 
