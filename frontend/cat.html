@@ -23,11 +23,9 @@
       }
     };
 
-
-    // Show/hide toggle container on mousemove
+    // Show/hide toggle container on mousemove (right edge)
     document.addEventListener('mousemove', e => {
       const container = document.getElementById('toggleContainer');
-      // Rechts-20 %: wenn die Maus weiter rechts ist als 80 % der Fensterbreite
       if (e.clientX > window.innerWidth * 0.8) {
         container.classList.add('opacity-100', 'pointer-events-auto');
         container.classList.remove('opacity-0', 'pointer-events-none');
@@ -36,6 +34,24 @@
         container.classList.add('opacity-0', 'pointer-events-none');
       }
     });
+
+    // Randomize cursor paw image on each reload
+    (function() {
+      const paws = [
+        'Black1-Cat-Paw.cur',
+        'Black2-Cat-Paw.cur',
+        'Tabby-Cat-Paw.cur',
+        'White-Cat-Paw.cur',
+        'Tan-Cat-Paw.cur',
+        'White-Grey-Cat-Paw.cur',
+      ];
+      const rand = paws[Math.floor(Math.random() * paws.length)];
+      const cursorUrl = `/images/cursor/${rand}`;
+      const css = `html, body, * { cursor: url('${cursorUrl}') 0 0, auto !important; }`;
+      const styleEl = document.createElement('style');
+      styleEl.appendChild(document.createTextNode(css));
+      document.head.appendChild(styleEl);
+    })();
   </script>
 
   <style>
@@ -129,7 +145,8 @@
   </div>
 
   <!-- Toggles -->
-  <div id="toggleContainer" class="absolute top-0 right-0 w-full flex justify-end p-4 opacity-0 transition-opacity duration-300 pointer-events-none">
+  <div id="toggleContainer"
+       class="absolute top-0 right-0 w-full flex justify-end p-4 opacity-0 transition-opacity duration-300 pointer-events-none">
     <div class="flex flex-col items-end space-y-2 bg-gray-800 bg-opacity-80 rounded-lg p-3 backdrop-blur-md">
       <label class="flex items-center cursor-pointer text-sm sm:text-base">
         <input type="checkbox" id="toggleWeekend" class="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
@@ -158,9 +175,15 @@
     <!-- Cat content -->
     <div class="text-center relative w-full md:w-auto">
       <h1 id="catTitle" class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Cat Detail</h1>
-      <div id="voteQR" class="hidden absolute right-full mr-4 sm:mr-6 top-1/2 transform -translate-y-1/2 bg-white rounded-lg shadow-lg p-3 sm:p-4 text-gray-900 text-center">
+      <div id="voteQR"
+           class="hidden absolute right-full mr-4 sm:mr-6 top-1/2 transform -translate-y-1/2
+                  bg-white rounded-lg shadow-lg p-3 sm:p-4 text-gray-900 text-center">
         <p class="text-xl sm:text-2xl font-bold mb-2">Join the voting:</p>
-        <img id="qrImg" src="/images/qr-code.png" alt="QR Code to vote" class="mx-auto w-32 sm:w-48 h-auto" />
+        <img
+          id="qrImg"
+          src="/images/qr-code.png"
+          alt="QR Code to vote"
+          class="mx-auto w-32 sm:w-48 h-auto" />
       </div>
       <img id="catImg" src="" alt="" class="mx-auto rounded-lg shadow-lg mb-4 max-h-80 sm:max-h-96 w-full sm:w-auto object-contain"/>
       <div id="weekendCountdown" class="hidden absolute bg-transparent px-4 py-3 rounded-lg shadow-lg text-center flex flex-col items-center justify-center" style="height:auto;width:auto;">
@@ -178,26 +201,6 @@
   </div>
 
   <script>
-
-    // Randomize cursor paw image on each reload
-    // Immediately apply a random cursor paw (runs on every load)
-(function() {
-  const paws = [
-    'Black1-Cat-Paw.cur',
-    'Black2-Cat-Paw.cur',
-    'Tabby-Cat-Paw.cur',
-    'White-Cat-Paw.cur',
-    'Tan-Cat-Paw.cur',
-    'White-Grey-Cat-Paw.cur',
-  ];
-  const rand = paws[Math.floor(Math.random() * paws.length)];
-  const cursorUrl = `/images/cursor/${rand}`;
-  const css = `html, body, * { cursor: url('${cursorUrl}') 0 0, auto !important; }`;
-  const styleEl = document.createElement('style');
-  styleEl.appendChild(document.createTextNode(css));
-  document.head.appendChild(styleEl);
-})();
-
     document.addEventListener('DOMContentLoaded', () => {
       const toggleThemes = document.getElementById('toggleThemes');
       const selector = document.getElementById('themeSelector');
@@ -231,6 +234,58 @@
         const theme = e.dataTransfer.getData('text/plain');
         if (theme) document.documentElement.setAttribute('data-theme', theme);
         list.style.display = 'none';
+
+        // Christmas snowflakes
+        if (theme === 'christmas') {
+          // Inject styles once
+          if (!document.getElementById('snowflake-styles')) {
+            const css = `
+              .snowflake {
+                position: fixed; top: -10%; z-index: 9999; user-select: none; cursor: default;
+                color: #fff; font-size: 1em; font-family: Arial; text-shadow: 0 0 1px #000;
+                animation: snowflakes-fall 10s linear infinite, snowflakes-shake 3s ease-in-out infinite;
+              }
+              @keyframes snowflakes-fall { 0% { top: -10% } 100% { top: 100% } }
+              @keyframes snowflakes-shake {
+                0% { transform: translateX(0) }
+                50% { transform: translateX(80px) }
+                100% { transform: translateX(0) }
+              }
+              .snowflake:nth-child(1)  { left:  1%; animation-delay: 0s, 0s; }
+              .snowflake:nth-child(2)  { left: 10%; animation-delay: 1s, 1s; }
+              .snowflake:nth-child(3)  { left: 20%; animation-delay: 6s, 0.5s; }
+              .snowflake:nth-child(4)  { left: 30%; animation-delay: 4s, 2s; }
+              .snowflake:nth-child(5)  { left: 40%; animation-delay: 2s, 2s; }
+              .snowflake:nth-child(6)  { left: 50%; animation-delay: 8s, 3s; }
+              .snowflake:nth-child(7)  { left: 60%; animation-delay: 6s, 2s; }
+              .snowflake:nth-child(8)  { left: 70%; animation-delay: 2.5s, 1s; }
+              .snowflake:nth-child(9)  { left: 80%; animation-delay: 1s, 0s; }
+              .snowflake:nth-child(10) { left: 90%; animation-delay: 3s, 1.5s; }
+            `;
+            const style = document.createElement('style');
+            style.id = 'snowflake-styles';
+            style.textContent = css;
+            document.head.appendChild(style);
+          }
+          // Create or show container
+          let container = document.getElementById('snowflakes');
+          if (!container) {
+            container = document.createElement('div');
+            container.id = 'snowflakes';
+            ['❅','❅','❆','❄','❅','❆','❄','❅','❆','❄'].forEach(ch => {
+              const flake = document.createElement('div');
+              flake.className = 'snowflake';
+              flake.textContent = ch;
+              container.appendChild(flake);
+            });
+            document.body.appendChild(container);
+          } else {
+            container.style.display = 'block';
+          }
+        } else {
+          const container = document.getElementById('snowflakes');
+          if (container) container.style.display = 'none';
+        }
       });
     });
     
