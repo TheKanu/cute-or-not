@@ -39,11 +39,12 @@
           id="card-left"
           class="vote-card bg-transparent rounded-xl shadow-md p-4 flex flex-col justify-between items-center h-80 transition-all duration-500 opacity-0"
         >
-          <img
-            id="left"
-            alt="Linke Katze"
-            class="cat-img w-full h-64 object-cover rounded-lg transition-all duration-300"
-          />
+<img
+  id="left"
+  alt="Linke Katze"
+  class="cat-img w-full h-64 object-cover rounded-lg transition-all duration-300 blur-sm"
+/>
+
           <button
             onclick="vote(leftUrl, 'left')"
             class="w-full bg-primary text-white px-4 py-2 rounded hover:bg-orange-600 transition"
@@ -55,11 +56,12 @@
           id="card-right"
           class="vote-card bg-transparent rounded-xl shadow-md p-4 flex flex-col justify-between items-center h-80 transition-all duration-500 opacity-0"
         >
-          <img
-            id="right"
-            alt="Rechte Katze"
-            class="cat-img w-full h-64 object-cover rounded-lg transition-all duration-300"
-          />
+<img
+  id="right"
+  alt="Rechte Katze"
+  class="cat-img w-full h-64 object-cover rounded-lg transition-all duration-300 blur-sm"
+/>
+
           <button
             onclick="vote(rightUrl, 'right')"
             class="w-full bg-primary text-white px-4 py-2 rounded hover:bg-orange-600 transition"
@@ -190,16 +192,25 @@
         [leftUrl, rightUrl] = await Promise.all([fetchCat(), fetchCat()]);
         if (leftUrl === rightUrl) return loadCats();
 
-        await Promise.all([
-          new Promise(resolve => {
-            leftImg.onload = resolve;
-            leftImg.src = leftUrl;
-          }),
-          new Promise(resolve => {
-            rightImg.onload = resolve;
-            rightImg.src = rightUrl;
-          }),
-        ]);
+      await Promise.all([
+        new Promise(resolve => {
+          leftImg.onload = () => {
+            leftImg.classList.remove('blur-sm');
+            resolve();
+          };
+          leftImg.classList.add('blur-sm'); // reset blur in case it's reused
+          leftImg.src = leftUrl;
+        }),
+        new Promise(resolve => {
+          rightImg.onload = () => {
+            rightImg.classList.remove('blur-sm');
+            resolve();
+          };
+          rightImg.classList.add('blur-sm'); // reset blur in case it's reused
+          rightImg.src = rightUrl;
+        }),
+      ]);
+
 
         cards.forEach(card => card.classList.remove('opacity-0'));
       }
