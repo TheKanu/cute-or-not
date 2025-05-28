@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cat Detail</title>
-    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -22,256 +22,182 @@
       },
     };
 
-      document.addEventListener('mousemove', (e) => {
-    const container = document.getElementById('toggleContainer');
-    if (e.clientY < window.innerHeight * 0.2) {
-      container.classList.add('opacity-100', 'pointer-events-auto');
-      container.classList.remove('opacity-0', 'pointer-events-none');
-    } else {
-      container.classList.remove('opacity-100', 'pointer-events-auto');
-      container.classList.add('opacity-0', 'pointer-events-none');
-    }
-  });
+    document.addEventListener('mousemove', (e) => {
+      const container = document.getElementById('toggleContainer');
+      if (e.clientY < window.innerHeight * 0.2) {
+        container.classList.add('opacity-100', 'pointer-events-auto');
+        container.classList.remove('opacity-0', 'pointer-events-none');
+      } else {
+        container.classList.remove('opacity-100', 'pointer-events-auto');
+        container.classList.add('opacity-0', 'pointer-events-none');
+      }
+    });
   </script>
 </head>
-<body class="bg-gray-900 text-white h-screen flex items-center justify-center relative">
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center relative p-4">
   <!-- Toggles -->
-<div id="toggleContainer"
-     class="absolute top-0 right-0 w-full flex justify-end p-4 opacity-0 transition-opacity duration-300 pointer-events-none">
-  <div class="flex flex-col items-end space-y-2 bg-gray-800 bg-opacity-80 rounded-lg p-3">
-    <label class="flex items-center cursor-pointer">
-      <input type="checkbox" id="toggleWeekend" class="mr-2 w-5 h-5" />
-      <span>Vis nedtelling til helg</span>
-    </label>
-    <label class="flex items-center cursor-pointer">
-      <input type="checkbox" id="toggleSeconds" class="mr-2 w-5 h-5" />
-      <span>OnlySeconds</span>
-    </label>
-    <label class="flex items-center cursor-pointer">
-      <input type="checkbox" id="toggleQR" class="mr-2 w-5 h-5" />
-      <span>QR-Code for voting</span>
-    </label>
-  </div>
-</div>
-
-  <div class="flex flex-col md:flex-row items-center justify-center gap-10">
-    <!-- Cat content -->
-    <div class="text-center relative inline-block">
-      <h1 id="catTitle" class="text-5xl font-bold mb-4">Cat Detail</h1>
-
-    <!-- QR-Code Voting Link (left of the image) -->
-    <div id="voteQR"
-        class="hidden absolute right-full mr-6 top-1/2 transform -translate-y-1/2
-                bg-white rounded-lg shadow-lg p-4 text-gray-900 text-center">
-      <p class="text-2xl font-bold mb-4">Join the voting:</p>
-      <img
-        id="qrImg"
-        src="/images/qr-code.png"
-        alt="QR Code to vote"
-        class="mx-auto w-48 h-256" />
+  <div id="toggleContainer"
+       class="absolute top-0 right-0 w-full flex justify-end p-4 opacity-0 transition-opacity duration-300 pointer-events-none">
+    <div class="flex flex-col items-end space-y-2 bg-gray-800 bg-opacity-80 rounded-lg p-3 backdrop-blur-md">
+      <label class="flex items-center cursor-pointer text-sm sm:text-base">
+        <input type="checkbox" id="toggleWeekend" class="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
+        <span>Vis nedtelling til helg</span>
+      </label>
+      <label class="flex items-center cursor-pointer text-sm sm:text-base">
+        <input type="checkbox" id="toggleSeconds" class="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
+        <span>OnlySeconds</span>
+      </label>
+      <label class="flex items-center cursor-pointer text-sm sm:text-base">
+        <input type="checkbox" id="toggleQR" class="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
+        <span>QR-Code for voting</span>
+      </label>
     </div>
+  </div>
 
-      <img id="catImg" src="" alt="" class="mx-auto rounded-lg shadow-lg mb-4 max-h-96"/>
+  <div class="container mx-auto flex flex-col md:flex-row items-center justify-center gap-8 w-full max-w-4xl">
+    <!-- Cat content -->
+    <div class="text-center relative w-full md:w-auto">
+      <h1 id="catTitle" class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Cat Detail</h1>
+
+      <!-- QR-Code Voting Link (left of the image) -->
+      <div id="voteQR"
+           class="hidden absolute right-full mr-4 sm:mr-6 top-1/2 transform -translate-y-1/2
+                  bg-white rounded-lg shadow-lg p-3 sm:p-4 text-gray-900 text-center">
+        <p class="text-xl sm:text-2xl font-bold mb-2">Join the voting:</p>
+        <img
+          id="qrImg"
+          src="/images/qr-code.png"
+          alt="QR Code to vote"
+          class="mx-auto w-32 sm:w-48 h-auto" />
+      </div>
+
+      <img id="catImg" src="" alt="" class="mx-auto rounded-lg shadow-lg mb-4 max-h-80 sm:max-h-96 w-full sm:w-auto object-contain"/>
 
       <!-- Countdown / Weekend Celebration (right of the image) -->
       <div id="weekendCountdown"
-           class="hidden absolute left-full ml-6 top-1/2 transform -translate-y-1/2
-                  bg-softbg text-softfg px-6 py-4 rounded-lg shadow-lg text-center">
-        <p class="text-xl font-semibold mb-2">Til helg:</p>
-        <p id="countdownText" class="text-6xl font-mono whitespace-nowrap"></p>
+           class="hidden absolute left-full ml-4 sm:ml-6 top-1/2 transform -translate-y-1/2
+                  bg-softbg text-softfg px-4 sm:px-6 py-3 sm:py-4 rounded-lg shadow-lg text-center">
+        <p class="text-lg sm:text-xl font-semibold mb-1">Til helg:</p>
+        <p id="countdownText" class="text-4xl sm:text-6xl font-mono whitespace-nowrap"></p>
       </div>
 
-      <p id="catName" class="text-3xl font-semibold mt-4 mb-2"></p>
-      <p id="catVotes" class="text-lg mb-4"></p>
-      <a href="/" class="bg-primary text-white px-6 py-2 rounded hover:bg-orange-600 transition">Back</a>
+      <p id="catName" class="text-2xl sm:text-3xl font-semibold mt-4 mb-2 truncate"></p>
+      <p id="catVotes" class="text-base sm:text-lg mb-4"></p>
+      <a href="/" class="inline-block bg-primary text-white px-4 sm:px-6 py-2 rounded hover:bg-orange-600 transition text-sm sm:text-base">Back</a>
     </div>
   </div>
 
   <script>
-  // Get next Friday 15:30 (unchanged)
-  function getNextFriday330() {
-    const now = new Date();
-    const day = now.getDay();
-    let delta = (5 - day + 7) % 7;
-    const target = new Date(now);
-    target.setDate(now.getDate() + delta);
-    target.setHours(15, 30, 0, 0);
-    if (target <= now) target.setDate(target.getDate() + 7);
-    return target;
-  }
+    // Get next Friday 15:30
+    function getNextFriday330() {
+      const now = new Date();
+      const day = now.getDay();
+      let delta = (5 - day + 7) % 7;
+      const target = new Date(now);
+      target.setDate(now.getDate() + delta);
+      target.setHours(15, 30, 0, 0);
+      if (target <= now) target.setDate(target.getDate() + 7);
+      return target;
+    }
 
-  // Check if we are already in celebration mode (unchanged)
-  function isWeekendCelebration() {
-    const now = new Date();
-    const day = now.getDay(), h = now.getHours(), m = now.getMinutes();
-    if (day === 5 && (h > 15 || (h === 15 && m >= 30))) return true;
-    if (day === 6 || day === 0) return true;
-    return false;
-  }
+    // Check if we are already in celebration mode
+    function isWeekendCelebration() {
+      const now = new Date();
+      const day = now.getDay(), h = now.getHours(), m = now.getMinutes();
+      if (day === 5 && (h > 15 || (h === 15 && m >= 30))) return true;
+      if (day === 6 || day === 0) return true;
+      return false;
+    }
 
-  // Calculates the remaining time in "business hours" (8–15:30 Mon–Fri)
-function getBusinessHourDiff(now, target) {
-  const MS = 1000, MIN = 60*MS, HOUR = 60*MIN;
-  const WORK_START = 8, WORK_END = 15.5; // 15:30 = 15.5h
+    // Calculates the remaining time in "business hours"
+    function getBusinessHourDiff(now, target) {
+      const MS = 1000, MIN = 60*MS, HOUR = 60*MIN;
+      const WORK_START = 8, WORK_END = 15.5;
+      let totalMs = 0;
+      let cur = new Date(now);
 
-  let totalMs = 0;
-  let cur = new Date(now);
-
-  // 1) Shift to first business window
-  const curHour = cur.getHours() + cur.getMinutes()/60;
-  if (curHour < WORK_START) {
-    cur.setHours(WORK_START, 0, 0, 0);
-  } else if (curHour >= WORK_END || [0,6].includes(cur.getDay())) {
-    // next business day at 8:00
-    do { cur.setDate(cur.getDate()+1); }
-    while ([0,6].includes(cur.getDay()));
-    cur.setHours(WORK_START,0,0,0);
-  }
-
-  const end = new Date(target);
-
-  // 2) Loop day by day
-  while (cur < end) {
-    if (![0,6].includes(cur.getDay())) {
-      // Day's business start and end
-      const dayStart = new Date(cur);
-      dayStart.setHours(WORK_START,0,0,0);
-      const dayEnd = new Date(cur);
-      dayEnd.setHours(WORK_END,30,0,0); // 15:30:00
-
-      // Intersection [cur, end] ∩ [dayStart, dayEnd]
-      const from = new Date(Math.max(cur, dayStart));
-      const to   = new Date(Math.min(end, dayEnd));
-      if (to > from) {
-        totalMs += to - from;
+      const curHour = cur.getHours() + cur.getMinutes()/60;
+      if (curHour < WORK_START) {
+        cur.setHours(WORK_START, 0, 0, 0);
+      } else if (curHour >= WORK_END || [0,6].includes(cur.getDay())) {
+        do { cur.setDate(cur.getDate()+1); } while ([0,6].includes(cur.getDay()));
+        cur.setHours(WORK_START,0,0,0);
       }
 
-      // 3) Important: set cur to the later of (dayEnd, from)
-      cur = new Date(Math.max(dayEnd, from));
+      const end = new Date(target);
+
+      while (cur < end) {
+        if (![0,6].includes(cur.getDay())) {
+          const dayStart = new Date(cur);
+          dayStart.setHours(WORK_START,0,0,0);
+          const dayEnd = new Date(cur);
+          dayEnd.setHours(15,30,0,0);
+          const from = new Date(Math.max(cur, dayStart));
+          const to   = new Date(Math.min(end, dayEnd));
+          if (to > from) totalMs += to - from;
+          cur = new Date(Math.max(dayEnd, from));
+        }
+        if (cur < end) {
+          do { cur.setDate(cur.getDate()+1); } while ([0,6].includes(cur.getDay()));
+          cur.setHours(WORK_START,0,0,0);
+        }
+      }
+
+      return totalMs;
     }
 
-    // 4) If time remains and we are not at the target, go to next business day
-    if (cur < end) {
-      // next business day at 8:00
-      do { cur.setDate(cur.getDate()+1); }
-      while ([0,6].includes(cur.getDay()));
-      cur.setHours(WORK_START,0,0,0);
+    function updateCountdown() {
+      const disp = document.getElementById('countdownText');
+      if (isWeekendCelebration()) {
+        disp.textContent = 'Hooray!';
+        disp.classList.add('animate-pulseFast');
+        return;
+      }
+      disp.classList.remove('animate-pulseFast');
+      const now = new Date();
+      const target = getNextFriday330();
+      let diffMs = getBusinessHourDiff(now, target);
+
+      const showSeconds = document.getElementById('toggleSeconds').checked;
+      if (showSeconds) {
+        disp.textContent = `${Math.floor(diffMs/1000)}s`;
+        return;
+      }
+
+      const FULL_DAY_MS = 7.5 * 3600 * 1000;
+      const days = Math.floor(diffMs / FULL_DAY_MS);
+      let remMs = diffMs % FULL_DAY_MS;
+      const h = Math.floor(remMs / (3600 * 1000));
+      remMs -= h * 3600 * 1000;
+      const m = Math.floor(remMs / (60 * 1000));
+      const pad = n => String(n).padStart(2, '0');
+      disp.textContent = `0${days}d ${pad(h)}h ${pad(m)}m`;
     }
-  }
 
-  return totalMs;
-}
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleWeekend = document.getElementById('toggleWeekend');
+      const toggleQR = document.getElementById('toggleQR');
+      const toggleSeconds = document.getElementById('toggleSeconds');
+      const boxCountdown = document.getElementById('weekendCountdown');
+      const boxQR = document.getElementById('voteQR');
+      let interval = null;
+      function startCountdown() { updateCountdown(); interval = setInterval(updateCountdown, 1000); }
 
-function updateCountdown() {
-  const disp    = document.getElementById('countdownText');
-  if (isWeekendCelebration()) {
-    disp.textContent = 'Hooray!';
-    disp.classList.add('animate-pulseFast');
-    return;
-  }
-  disp.classList.remove('animate-pulseFast');
+      toggleWeekend.addEventListener('change', () => {
+        if (toggleWeekend.checked) { boxCountdown.classList.remove('hidden'); startCountdown(); }
+        else { boxCountdown.classList.add('hidden'); clearInterval(interval); }
+      });
 
-  const now      = new Date();
-  const target   = getNextFriday330();
-  let diffMs     = getBusinessHourDiff(now, target);
+      toggleSeconds.addEventListener('change', () => {
+        if (toggleWeekend.checked) { clearInterval(interval); startCountdown(); }
+      });
 
-  // Length of a "business day" in ms (7.5 h)
-  const FULL_DAY_MS = 7.5 * 60 * 60 * 1000;
+      toggleQR.addEventListener('change', () => {
+        if (toggleQR.checked) boxQR.classList.remove('hidden');
+        else boxQR.classList.add('hidden');
+      });
+    });
 
-  // Number of full 7.5h blocks
-  const days  = Math.floor(diffMs / FULL_DAY_MS);
-
-  // Remainder (always < 7.5 h)
-  let remMs    = diffMs % FULL_DAY_MS;
-
-  // Hours, minutes, seconds from the remainder
-  const h = Math.floor(remMs / (3600 * 1000));
-  remMs -= h * 3600 * 1000;
-  const m = Math.floor(remMs / (60 * 1000));
-  const s = Math.floor((remMs % (60 * 1000)) / 1000);
-
-  const pad = n => String(n).padStart(2, '0');
-  disp.textContent = `0${days}d ${pad(h)}h ${pad(m)}m`;
-}
-
-      // Toggle logic
-document.addEventListener('DOMContentLoaded', () => {
-  const toggleWeekend = document.getElementById('toggleWeekend');
-  const toggleQR      = document.getElementById('toggleQR');
-  const toggleSeconds = document.getElementById('toggleSeconds');  // new
-  const boxCountdown  = document.getElementById('weekendCountdown');
-  const boxQR         = document.getElementById('voteQR');
-
-  let interval = null;
-
-  // Shared timer setter
-  function startCountdown() {
-    updateCountdown();
-    interval = setInterval(updateCountdown, 1000);
-  }
-
-  toggleWeekend.addEventListener('change', () => {
-    if (toggleWeekend.checked) {
-      boxCountdown.classList.remove('hidden');
-      startCountdown();
-    } else {
-      boxCountdown.classList.add('hidden');
-      clearInterval(interval);
-    }
-  });
-
-  toggleSeconds.addEventListener('change', () => {
-    // If already visible, restart timer so updateCountdown considers the new mode
-    if (toggleWeekend.checked) {
-      clearInterval(interval);
-      startCountdown();
-    }
-  });
-
-  toggleQR.addEventListener('change', () => {
-    if (toggleQR.checked) boxQR.classList.remove('hidden');
-    else                  boxQR.classList.add('hidden');
-  });
-});
-
-function updateCountdown() {
-  const disp      = document.getElementById('countdownText');
-  const now       = new Date();
-  const target    = getNextFriday330();
-
-  // If celebration mode is on
-  if (isWeekendCelebration()) {
-    disp.textContent = 'Hooray!';
-    disp.classList.add('animate-pulseFast');
-    return;
-  }
-  disp.classList.remove('animate-pulseFast');
-
-  // Remaining business time in milliseconds
-  const diffMs    = getBusinessHourDiff(now, target);
-
-  // Seconds toggle?
-  const showSeconds = document.getElementById('toggleSeconds').checked;
-  if (showSeconds) {
-    const secs = Math.floor(diffMs / 1000);
-    disp.textContent = `${secs}s`;
-    return;
-  }
-
-  // Otherwise, default format: Xd Yh Zm
-  const FULL_DAY_MS = 7.5 * 60 * 60 * 1000;
-  const days  = Math.floor(diffMs / FULL_DAY_MS);
-  let remMs   = diffMs % FULL_DAY_MS;
-
-  const h     = Math.floor(remMs / (3600 * 1000));
-  remMs      -= h * 3600 * 1000;
-  const m     = Math.floor(remMs / (60 * 1000));
-
-  const pad = n => String(n).padStart(2, '0');
-  disp.textContent = `0${days}d ${pad(h)}h ${pad(m)}m`;
-}
-
-    // Cat detail logic unchanged
     async function loadCat() {
       const params = new URLSearchParams(window.location.search);
       const category = params.get('category');
@@ -285,7 +211,6 @@ function updateCountdown() {
         search: 'Search Result'
       };
       const pageTitle = titleMap[category] || 'Cat Detail';
-
       document.title = pageTitle;
       document.getElementById('catTitle').textContent = pageTitle;
 
