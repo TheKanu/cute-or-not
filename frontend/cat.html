@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="default">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -7,24 +7,28 @@
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    // Tailwind config
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            primary: '#f97316',
-            softbg: '#1f2937', // Tailwind gray-800
-            softfg: '#facc15'  // Tailwind yellow-400
+            primary: 'var(--color-primary)',
+            softbg: 'var(--color-bg)',
+            softfg: 'var(--color-fg)'
           },
           animation: {
             pulseFast: 'pulse 0.5s ease-in-out infinite'
           }
-        },
-      },
+        }
+      }
     };
 
-    document.addEventListener('mousemove', (e) => {
+
+    // Show/hide toggle container on mousemove
+    document.addEventListener('mousemove', e => {
       const container = document.getElementById('toggleContainer');
-      if (e.clientY < window.innerHeight * 0.2) {
+      // Rechts-20 %: wenn die Maus weiter rechts ist als 80 % der Fensterbreite
+      if (e.clientX > window.innerWidth * 0.8) {
         container.classList.add('opacity-100', 'pointer-events-auto');
         container.classList.remove('opacity-0', 'pointer-events-none');
       } else {
@@ -33,19 +37,99 @@
       }
     });
   </script>
+
   <style>
+    /* Theme variables */
+    :root {
+      --color-primary: #f97316;
+      --color-bg: #1f2937;
+      --color-fg: #ffffff;
+      --color-accent: #f97316;
+    }
+    [data-theme="halloween"] {
+      --color-primary: #ff6f61;
+      --color-bg: #2b2c28;
+      --color-fg: #f5a623;
+      --color-accent: #ff6f61;
+    }
+    [data-theme="christmas"] {
+      --color-primary: #208f26;
+      --color-bg: #171f01;
+      --color-fg: #e01111;
+      --color-accent: #208f26;
+    }
+
+    /* Base styling */
+    body {
+      background: var(--color-bg);
+      color: var(--color-fg);
+      transition: background 0.5s, color 0.5s;
+    }
+    a {
+      background-color: var(--color-primary);
+      transition: background-color 0.5s;
+    }
+
     /* Flex-column for vertical units */
     .vertical-units {
       display: flex !important;
       flex-direction: column !important;
       gap: 0.5rem;
     }
+
+    /* Theme selector styles */
+    #themeSelector {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      width: 2rem;
+      height: 2rem;
+      background: var(--color-primary);
+      border-radius: 0.5rem;
+      cursor: pointer;
+      z-index: 50;
+      display: none;
+      transition: background-color 0.5s;
+    }
+    #themeList {
+      position: absolute;
+      top: 3.5rem;
+      left: 1rem;
+      background: var(--color-bg);
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      display: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 50;
+      transition: background 0.5s, color 0.5s;
+    }
+    #themeList.dragging {
+      opacity: 0.8;
+    }
+    .theme-item {
+      padding: 0.25rem 0.5rem;
+      margin: 0.25rem 0;
+      background: var(--color-accent);
+      color: var(--color-bg);
+      border-radius: 0.25rem;
+      cursor: grab;
+      transition: background 0.5s, color 0.5s;
+    }
+    .theme-item:active {
+      cursor: grabbing;
+    }
   </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center relative p-4">
+<body class="min-h-screen flex flex-col items-center justify-center relative p-4">
+  <!-- Theme UI -->
+  <div id="themeSelector" title="Choose theme"></div>
+  <div id="themeList">
+    <div class="theme-item" draggable="true" data-theme="halloween">Halloween</div>
+    <div class="theme-item" draggable="true" data-theme="christmas">Christmas</div>
+  </div>
+
   <!-- Toggles -->
-  <div id="toggleContainer"
-       class="absolute top-0 right-0 w-full flex justify-end p-4 opacity-0 transition-opacity duration-300 pointer-events-none">
+  <div id="toggleContainer" class="absolute top-0 right-0 w-full flex justify-end p-4 opacity-0 transition-opacity duration-300 pointer-events-none">
     <div class="flex flex-col items-end space-y-2 bg-gray-800 bg-opacity-80 rounded-lg p-3 backdrop-blur-md">
       <label class="flex items-center cursor-pointer text-sm sm:text-base">
         <input type="checkbox" id="toggleWeekend" class="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
@@ -63,6 +147,10 @@
         <input type="checkbox" id="toggleQR" class="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
         <span>QR-Code for voting</span>
       </label>
+      <label class="flex items-center cursor-pointer text-sm sm:text-base">
+        <input type="checkbox" id="toggleThemes" class="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
+        <span>Show Themes</span>
+      </label>
     </div>
   </div>
 
@@ -70,25 +158,12 @@
     <!-- Cat content -->
     <div class="text-center relative w-full md:w-auto">
       <h1 id="catTitle" class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Cat Detail</h1>
-
-      <!-- QR-Code Voting Link (left of the image) -->
-      <div id="voteQR"
-           class="hidden absolute right-full mr-4 sm:mr-6 top-1/2 transform -translate-y-1/2
-                  bg-white rounded-lg shadow-lg p-3 sm:p-4 text-gray-900 text-center">
+      <div id="voteQR" class="hidden absolute right-full mr-4 sm:mr-6 top-1/2 transform -translate-y-1/2 bg-white rounded-lg shadow-lg p-3 sm:p-4 text-gray-900 text-center">
         <p class="text-xl sm:text-2xl font-bold mb-2">Join the voting:</p>
-        <img
-          id="qrImg"
-          src="/images/qr-code.png"
-          alt="QR Code to vote"
-          class="mx-auto w-32 sm:w-48 h-auto" />
+        <img id="qrImg" src="/images/qr-code.png" alt="QR Code to vote" class="mx-auto w-32 sm:w-48 h-auto" />
       </div>
-
       <img id="catImg" src="" alt="" class="mx-auto rounded-lg shadow-lg mb-4 max-h-80 sm:max-h-96 w-full sm:w-auto object-contain"/>
-
-      <!-- Countdown / Weekend Celebration (right of the image) -->
-      <div id="weekendCountdown"
-           class="hidden absolute bg-transparent text-softfg px-4 py-3 rounded-lg shadow-lg text-center flex flex-col items-center justify-center"
-           style="height: auto; width: auto;">
+      <div id="weekendCountdown" class="hidden absolute bg-transparent px-4 py-3 rounded-lg shadow-lg text-center flex flex-col items-center justify-center" style="height:auto;width:auto;">
         <p class="text-lg sm:text-xl font-semibold mb-2">Til helg:</p>
         <div id="countdownUnits" class="flex flex-row space-x-2">
           <span id="countdownDays" class="text-4xl sm:text-6xl font-mono"></span>
@@ -96,14 +171,70 @@
           <span id="countdownMinutes" class="text-4xl sm:text-6xl font-mono"></span>
         </div>
       </div>
-
       <p id="catName" class="text-2xl sm:text-3xl font-semibold mt-4 mb-2 truncate"></p>
       <p id="catVotes" class="text-base sm:text-lg mb-4"></p>
-      <a href="/" class="inline-block bg-primary text-white px-4 sm:px-6 py-2 rounded hover:bg-orange-600 transition text-sm sm:text-base">Back</a>
+      <a href="/" class="inline-block text-white px-4 sm:px-6 py-2 rounded hover:bg-opacity-90 transition text-sm sm:text-base">Back</a>
     </div>
   </div>
 
   <script>
+
+    // Randomize cursor paw image on each reload
+    // Immediately apply a random cursor paw (runs on every load)
+(function() {
+  const paws = [
+    'Black1-Cat-Paw.cur',
+    'Black2-Cat-Paw.cur',
+    'Tabby-Cat-Paw.cur',
+    'White-Cat-Paw.cur',
+    'Tan-Cat-Paw.cur',
+    'White-Grey-Cat-Paw.cur',
+  ];
+  const rand = paws[Math.floor(Math.random() * paws.length)];
+  const cursorUrl = `/images/cursor/${rand}`;
+  const css = `html, body, * { cursor: url('${cursorUrl}') 0 0, auto !important; }`;
+  const styleEl = document.createElement('style');
+  styleEl.appendChild(document.createTextNode(css));
+  document.head.appendChild(styleEl);
+})();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleThemes = document.getElementById('toggleThemes');
+      const selector = document.getElementById('themeSelector');
+      const list = document.getElementById('themeList');
+
+      // Toggle theme UI visibility
+      toggleThemes.addEventListener('change', () => {
+        const show = toggleThemes.checked;
+        selector.style.display = show ? 'block' : 'none';
+        if (!show) list.style.display = 'none';
+      });
+
+      // Show/hide list on hover
+      selector.addEventListener('mouseenter', () => list.style.display = 'block');
+      selector.addEventListener('mouseleave', () => setTimeout(() => {
+        if (!list.matches(':hover')) list.style.display = 'none';
+      }, 100));
+      list.addEventListener('mouseleave', () => list.style.display = 'none');
+
+      // Drag & drop themes
+      list.querySelectorAll('.theme-item').forEach(item => {
+        item.addEventListener('dragstart', e => {
+          e.dataTransfer.setData('text/plain', item.dataset.theme);
+          list.classList.add('dragging');
+        });
+        item.addEventListener('dragend', () => list.classList.remove('dragging'));
+      });
+      document.body.addEventListener('dragover', e => e.preventDefault());
+      document.body.addEventListener('drop', e => {
+        e.preventDefault();
+        const theme = e.dataTransfer.getData('text/plain');
+        if (theme) document.documentElement.setAttribute('data-theme', theme);
+        list.style.display = 'none';
+      });
+    });
+    
+    // Countdown logic
     function getNextFriday330() {
       const now = new Date();
       const delta = (5 - now.getDay() + 7) % 7;
