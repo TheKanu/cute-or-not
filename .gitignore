@@ -6,6 +6,7 @@ node_modules/
 
 # Logs
 *.log
+nohup.out
 
 # OS files
 .DS_Store
