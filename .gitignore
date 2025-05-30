@@ -11,5 +11,6 @@ nohup.out
 # OS files
 .DS_Store
 
-# not needed
-backend/images/
+# licenses
+backend/images/cats
+backend/images/cursor
