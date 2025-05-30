@@ -1,3 +1,4 @@
+// db.js
 import pg from 'pg';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -18,20 +19,17 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT || 5432,
-  // Connection pool settings for better performance
-  max: 20,                    // Maximum number of clients in the pool
-  idleTimeoutMillis: 30000,   // Close idle clients after 30 seconds
-  connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection cannot be established
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
 });
 
-// Connection event handlers
 pool.on('connect', () => {
   console.log('[DATABASE] ✅ Successfully connected to PostgreSQL');
 });
 
 pool.on('error', (err) => {
   console.error('[DATABASE ERROR] ❌ Unexpected error on idle client:', err);
-  // Don't exit the application on idle client errors
 });
 
 /**
@@ -61,5 +59,20 @@ export async function closePool() {
   console.log('[DATABASE] 🛑 Connection pool closed');
 }
 
-// Export the pool for advanced use cases
+/**
+ * Normalize raw image_url or hash into a public-facing URL
+ * @param {Object} cat - Cat record from DB
+ * @param {string} cat.image_url - Raw stored URL or placeholder
+ * @param {string} cat.hash      - Unique hash identifier
+ * @returns {string} - Fully qualified image URL
+ */
+export function buildCatUrl(rawUrl, hash) {
+  // If already an absolute URL, return it
+  if (/^https?:\/\//.test(rawUrl)) {
+    return rawUrl;
+  }
+  // Otherwise, construct from hash
+  return `/images/cats/${hash}.jpg`;
+}
+
 export { pool };
