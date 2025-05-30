@@ -26,7 +26,10 @@ app.use(express.json()); // Parse JSON request bodies
 const frontendPath = path.join(__dirname, '..', 'frontend');
 app.use(express.static(frontendPath));
 app.get('/', (req, res) => res.sendFile(path.join(frontendPath, 'index.html')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(
+  '/images',
+  express.static(path.join(__dirname, '..', 'frontend', 'images'))
+);
 
 // Rate limiter for voting endpoint to prevent spam
 // Allows 15 votes per minute per IP address

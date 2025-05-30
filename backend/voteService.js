@@ -8,7 +8,7 @@ import { generateUniqueName } from './nameGenerator.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
-const imagesDir = path.join(__dirname, 'images');
+const imagesDir = path.join(__dirname, '..', 'frontend', 'images', 'cats');
 if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir, { recursive: true });
 }
