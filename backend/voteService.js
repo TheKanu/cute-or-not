@@ -6,7 +6,7 @@ import { query } from './db.js';
 import { generateUniqueName } from './nameGenerator.js';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname  = path.dirname(__filename);
+const __dirname = path.dirname(__filename);
 
 const imagesDir = path.join(__dirname, 'images');
 if (!fs.existsSync(imagesDir)) {
@@ -25,7 +25,7 @@ export async function saveVote(image_url, is_cute) {
     console.log('[saveVote] ✨ First vote for cat ID', cat.id);
 
     // a) Bild herunterladen & speichern
-    const buffer   = await downloadImage(image_url);
+    const buffer = await downloadImage(image_url);
     const filename = `${cat.hash}.jpg`;
     const savePath = path.join(imagesDir, filename);
     fs.writeFileSync(savePath, buffer);
@@ -65,7 +65,7 @@ export async function saveVote(image_url, is_cute) {
 
   // 3) Folge-Vote: Zähler erhöhen
   console.log('[saveVote] 🔄 Incrementing vote for existing cat ID', cat.id);
-  const newCute  = cat.cute_score + (is_cute ? 1 : 0);
+  const newCute = cat.cute_score + (is_cute ? 1 : 0);
   const newTotal = cat.total_votes + 1;
   const updateRes = await query(
     `UPDATE cats

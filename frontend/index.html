@@ -1,279 +1,256 @@
 <!DOCTYPE html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Who's the cutest 😺</title>
-    <!-- Tailwind CSS v4 via CDN -->
-    <script src="https://cdn.tailwindcss.com?plugins=typography,forms,aspect-ratio,line-clamp"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: '#f97316',    /* Orange */
-              secondary: '#facc15',  /* Gelb */
-              background: '#222227',
-            },
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Who's the cutest 😺</title>
+  <!-- Tailwind CSS v4 via CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=typography,forms,aspect-ratio,line-clamp"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#f97316',    /* Orange */
+            secondary: '#facc15',  /* Gelb */
+            background: '#222227',
           },
         },
-      };
-    </script>
-  </head>
-  <body class="bg-background text-gray-100 font-sans">
-    <div class="max-w-4xl mx-auto px-4 py-8">
-      <h1 class="text-4xl font-bold text-center text-primary mb-8">
-        Who's the cutest 😺
-      </h1>
+      },
+    };
+  </script>
+</head>
 
-      <!-- ✨ Global Votes Counter -->
-      <div id="totalVotes" class="text-center text-lg text-secondary mb-6">
-        Total Votes: 0
-      </div>
-      <div id="error" class="text-red-500 text-center mb-4"></div>
+<body class="bg-background text-gray-100 font-sans">
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-center text-primary mb-8">
+      Who's the cutest 😺
+    </h1>
 
-      <!-- Katzen-Voting Grid -->
-      <div id="cat-grid" class="grid grid-cols-2 gap-4 mb-6">
-        <div
-          id="card-left"
-          class="vote-card bg-transparent rounded-xl shadow-md p-4 flex flex-col justify-between items-center h-80 transition-all duration-500 opacity-0"
-        >
-          <img
-            id="left"
-            alt="Linke Katze"
-            class="cat-img w-full h-64 object-cover rounded-lg transition-all duration-300"
-          />
-          <button
-            onclick="vote(leftUrl, 'left')"
-            class="w-full bg-primary text-white px-4 py-2 rounded hover:bg-orange-600 transition"
-          >
-            Vote 😻
-          </button>
-        </div>
-        <div
-          id="card-right"
-          class="vote-card bg-transparent rounded-xl shadow-md p-4 flex flex-col justify-between items-center h-80 transition-all duration-500 opacity-0"
-        >
-          <img
-            id="right"
-            alt="Rechte Katze"
-            class="cat-img w-full h-64 object-cover rounded-lg transition-all duration-300"
-          />
-          <button
-            onclick="vote(rightUrl, 'right')"
-            class="w-full bg-primary text-white px-4 py-2 rounded hover:bg-orange-600 transition"
-          >
-            Vote 😻
-          </button>
-        </div>
-      </div>
+    <!-- ✨ Global Votes Counter -->
+    <div id="totalVotes" class="text-center text-lg text-secondary mb-6">
+      Total Votes: 0
+    </div>
+    <div id="error" class="text-red-500 text-center mb-4"></div>
 
-      <!-- Leaderboard Toggle -->
-      <div class="text-center mb-4">
-        <button
-          onclick="toggleLeaderboard()"
-          class="bg-secondary text-black px-6 py-2 rounded hover:bg-yellow-500 transition"
-        >
-          🏆 Show Leaderboard
+    <!-- Katzen-Voting Grid -->
+    <div id="cat-grid" class="grid grid-cols-2 gap-4 mb-6">
+      <div id="card-left"
+        class="vote-card bg-transparent rounded-xl shadow-md p-4 flex flex-col justify-between items-center h-80 transition-all duration-500 opacity-0">
+        <img id="left" alt="Linke Katze"
+          class="cat-img w-full h-64 object-cover rounded-lg transition-all duration-300" />
+        <button onclick="vote(leftUrl, 'left')"
+          class="w-full bg-primary text-white px-4 py-2 rounded hover:bg-orange-600 transition">
+          Vote 😻
         </button>
       </div>
-
-      <!-- Leaderboard Sections -->
-      <div id="leaderboard" class="mt-6 hidden">
-
-        <!-- Top Cutest Cat -->
-        <section class="mb-8 bg-white p-6 rounded-lg">
-          <h2 class="text-2xl font-semibold text-center text-black mb-4">
-            Top Cutest Cat
-          </h2>
-          <div id="topCutest" class="flex justify-center"></div>
-        </section>
-
-        <!-- Cat of the Year / Monthly / Daily -->
-        <section class="grid grid-cols-3 gap-4 mb-8">
-          <div class="bg-white p-4 rounded-lg text-center">
-            <h3 class="font-semibold mb-2 text-black">Cat of the Year</h3>
-            <div id="yearCat" class="flex justify-center"></div>
-          </div>
-          <div class="bg-white p-4 rounded-lg text-center">
-            <h3 class="font-semibold mb-2 text-black">Monthly Cutest</h3>
-            <div id="monthCat" class="flex justify-center"></div>
-          </div>
-          <div class="bg-white p-4 rounded-lg text-center">
-            <h3 class="font-semibold mb-2 text-black">Cat of the Day</h3>
-            <div id="dayCat" class="flex justify-center"></div>
-          </div>
-        </section>
-
-        <!-- 5 Random Cats -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-white mb-4">5 Random Cats</h2>
-          <div id="randomCats" class="grid grid-cols-5 gap-4"></div>
-        </section>
-
-        <!-- Search Field -->
-        <section class="mb-8">
-          <h2 class="text-2xl font-semibold text-white mb-2">
-            Your cat not displayed?
-          </h2>
-          <div class="flex gap-2 mb-4">
-            <input
-              id="searchInput"
-              type="text"
-              placeholder="Search by name"
-              class="flex-1 p-2 rounded text-black"
-            />
-            <button
-              onclick="doSearch()"
-              class="bg-primary text-white px-4 rounded"
-            >
-              Search
-            </button>
-          </div>
-          <div id="searchResults" class="grid grid-cols-3 gap-4"></div>
-        </section>
-
+      <div id="card-right"
+        class="vote-card bg-transparent rounded-xl shadow-md p-4 flex flex-col justify-between items-center h-80 transition-all duration-500 opacity-0">
+        <img id="right" alt="Rechte Katze"
+          class="cat-img w-full h-64 object-cover rounded-lg transition-all duration-300" />
+        <button onclick="vote(rightUrl, 'right')"
+          class="w-full bg-primary text-white px-4 py-2 rounded hover:bg-orange-600 transition">
+          Vote 😻
+        </button>
       </div>
     </div>
 
-    <footer class="fixed bottom-0 left-0 w-full bg-primary/100 text-white text-center p-1 z-10">
-      <p>
-        ❤️ Thanks to
-        <a href="https://cataas.com" target="_blank" rel="noopener" class="underline hover:text-gray-200">
-          CATAAS
-        </a>
-        for the service of providing the best cats. (All of them)
-      </p>
-    </footer>
+    <!-- Leaderboard Toggle -->
+    <div class="text-center mb-4">
+      <button onclick="toggleLeaderboard()"
+        class="bg-secondary text-black px-6 py-2 rounded hover:bg-yellow-500 transition">
+        🏆 Show Leaderboard
+      </button>
+    </div>
 
-    <script>
-      let votingLocked = false;
-      let leftUrl, rightUrl;
+    <!-- Leaderboard Sections -->
+    <div id="leaderboard" class="mt-6 hidden">
 
-      document.addEventListener('keydown', e => {
-        if (document.activeElement.tagName === 'INPUT') return;
-        if (votingLocked) return;
-        if (e.key === 'ArrowLeft') {
-          e.preventDefault();
-          votingLocked = true;
-          vote(leftUrl, 'left');
-        }
-        if (e.key === 'ArrowRight') {
-          e.preventDefault();
-          votingLocked = true;
-          vote(rightUrl, 'right');
-        }
+      <!-- Top Cutest Cat -->
+      <section class="mb-8 bg-white p-6 rounded-lg">
+        <h2 class="text-2xl font-semibold text-center text-black mb-4">
+          Top Cutest Cat
+        </h2>
+        <div id="topCutest" class="flex justify-center"></div>
+      </section>
+
+      <!-- Cat of the Year / Monthly / Daily -->
+      <section class="grid grid-cols-3 gap-4 mb-8">
+        <div class="bg-white p-4 rounded-lg text-center">
+          <h3 class="font-semibold mb-2 text-black">Cat of the Year</h3>
+          <div id="yearCat" class="flex justify-center"></div>
+        </div>
+        <div class="bg-white p-4 rounded-lg text-center">
+          <h3 class="font-semibold mb-2 text-black">Monthly Cutest</h3>
+          <div id="monthCat" class="flex justify-center"></div>
+        </div>
+        <div class="bg-white p-4 rounded-lg text-center">
+          <h3 class="font-semibold mb-2 text-black">Cat of the Day</h3>
+          <div id="dayCat" class="flex justify-center"></div>
+        </div>
+      </section>
+
+      <!-- 5 Random Cats -->
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-white mb-4">5 Random Cats</h2>
+        <div id="randomCats" class="grid grid-cols-5 gap-4"></div>
+      </section>
+
+      <!-- Search Field -->
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-white mb-2">
+          Your cat not displayed?
+        </h2>
+        <div class="flex gap-2 mb-4">
+          <input id="searchInput" type="text" placeholder="Search by name" class="flex-1 p-2 rounded text-black" />
+          <button onclick="doSearch()" class="bg-primary text-white px-4 rounded">
+            Search
+          </button>
+        </div>
+        <div id="searchResults" class="grid grid-cols-3 gap-4"></div>
+      </section>
+
+    </div>
+  </div>
+
+  <footer class="fixed bottom-0 left-0 w-full bg-primary/100 text-white text-center p-1 z-10">
+    <p>
+      ❤️ Thanks to
+      <a href="https://cataas.com" target="_blank" rel="noopener" class="underline hover:text-gray-200">
+        CATAAS
+      </a>
+      for the service of providing the best cats. (All of them)
+    </p>
+  </footer>
+
+  <script>
+    let votingLocked = false;
+    let leftUrl, rightUrl;
+
+    document.addEventListener('keydown', e => {
+      if (document.activeElement.tagName === 'INPUT') return;
+      if (votingLocked) return;
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        votingLocked = true;
+        vote(leftUrl, 'left');
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        votingLocked = true;
+        vote(rightUrl, 'right');
+      }
+    });
+
+    async function fetchCat() {
+      try {
+        const res = await fetch('/api/cat');
+        const data = await res.json();
+        return data.image_url;
+      } catch {
+        document.getElementById('error').textContent =
+          'Fehler beim Laden der Katze.';
+      }
+    }
+
+    async function loadCats() {
+      const cards = document.querySelectorAll('.vote-card');
+      const leftImg = document.getElementById('left');
+      const rightImg = document.getElementById('right');
+
+      cards.forEach(card => card.classList.add('opacity-0'));
+      document.querySelectorAll('.cat-img').forEach(img => {
+        img.classList.remove('ring-4', 'ring-green-500');
       });
 
-      async function fetchCat() {
-        try {
-          const res = await fetch('/api/cat');
-          const data = await res.json();
-          return data.image_url;
-        } catch {
-          document.getElementById('error').textContent =
-            'Fehler beim Laden der Katze.';
-        }
-      }
+      [leftUrl, rightUrl] = await Promise.all([fetchCat(), fetchCat()]);
+      if (leftUrl === rightUrl) return loadCats();
 
-      async function loadCats() {
-        const cards = document.querySelectorAll('.vote-card');
-        const leftImg = document.getElementById('left');
-        const rightImg = document.getElementById('right');
+      await Promise.all([
+        new Promise(resolve => {
+          leftImg.onload = resolve;
+          leftImg.src = leftUrl;
+        }),
+        new Promise(resolve => {
+          rightImg.onload = resolve;
+          rightImg.src = rightUrl;
+        }),
+      ]);
 
-        cards.forEach(card => card.classList.add('opacity-0'));
-        document.querySelectorAll('.cat-img').forEach(img => {
-          img.classList.remove('ring-4', 'ring-green-500');
-        });
+      cards.forEach(card => card.classList.remove('opacity-0'));
+    }
 
-        [leftUrl, rightUrl] = await Promise.all([fetchCat(), fetchCat()]);
-        if (leftUrl === rightUrl) return loadCats();
-
-        await Promise.all([
-          new Promise(resolve => {
-            leftImg.onload = resolve;
-            leftImg.src = leftUrl;
-          }),
-          new Promise(resolve => {
-            rightImg.onload = resolve;
-            rightImg.src = rightUrl;
-          }),
-        ]);
-
-        cards.forEach(card => card.classList.remove('opacity-0'));
-      }
-
-      async function vote(url, imgId) {
-        try {
-          const imgEl = document.getElementById(imgId);
-          imgEl.classList.add('ring-4', 'ring-green-500');
-          setTimeout(async () => {
-            await fetch('/api/vote', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ image_url: url, is_cute: true }),
-            });
-            await loadCats();
-            fetchTotalVotes();
-            votingLocked = false;
-          }, 300);
-        } catch {
-          document.getElementById('error').textContent = 'Fehler beim Voten.';
+    async function vote(url, imgId) {
+      try {
+        const imgEl = document.getElementById(imgId);
+        imgEl.classList.add('ring-4', 'ring-green-500');
+        setTimeout(async () => {
+          await fetch('/api/vote', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image_url: url, is_cute: true }),
+          });
+          await loadCats();
+          fetchTotalVotes();
           votingLocked = false;
-        }
+        }, 300);
+      } catch {
+        document.getElementById('error').textContent = 'Fehler beim Voten.';
+        votingLocked = false;
+      }
+    }
+
+    async function toggleLeaderboard() {
+      const lb = document.getElementById('leaderboard');
+      lb.classList.toggle('hidden');
+      if (!lb.classList.contains('hidden')) {
+        await loadLeaderboardSections();
+      }
+    }
+
+    async function fetchTotalVotes() {
+      try {
+        const res = await fetch('/api/total-votes');
+        const { total_votes } = await res.json();
+        document.getElementById(
+          'totalVotes'
+        ).textContent = `Total Votes: ${total_votes}`;
+      } catch {
+        // ignore
+      }
+    }
+
+    // Renders a cat card, picking the correct vote field
+    function renderCat(el, cat, category) {
+      if (!cat) {
+        el.innerHTML = '<p class="text-gray-400">none</p>';
+        return;
+      }
+      // Determine which vote count to show
+      let votes, voteLabel;
+      if (category === 'day') {
+        votes = cat.votes_today; voteLabel = 'votes today';
+      } else if (category === 'month') {
+        votes = cat.votes_this_month; voteLabel = 'votes this month';
+      } else if (category === 'year') {
+        votes = cat.votes_this_year; voteLabel = 'votes this year';
+      } else {
+        votes = cat.total_votes; voteLabel = 'votes';
       }
 
-      async function toggleLeaderboard() {
-        const lb = document.getElementById('leaderboard');
-        lb.classList.toggle('hidden');
-        if (!lb.classList.contains('hidden')) {
-          await loadLeaderboardSections();
-        }
-      }
-
-      async function fetchTotalVotes() {
-        try {
-          const res = await fetch('/api/total-votes');
-          const { total_votes } = await res.json();
-          document.getElementById(
-            'totalVotes'
-          ).textContent = `Total Votes: ${total_votes}`;
-        } catch {
-          // ignore
-        }
-      }
-
-      // Renders a cat card, picking the correct vote field
-      function renderCat(el, cat, category) {
-        if (!cat) {
-          el.innerHTML = '<p class="text-gray-400">none</p>';
-          return;
-        }
-        // Determine which vote count to show
-        let votes, voteLabel;
-        if (category === 'day') {
-          votes = cat.votes_today;    voteLabel = 'votes today';
-        } else if (category === 'month') {
-          votes = cat.votes_this_month; voteLabel = 'votes this month';
-        } else if (category === 'year') {
-          votes = cat.votes_this_year;  voteLabel = 'votes this year';
-        } else {
-          votes = cat.total_votes;     voteLabel = 'votes';
-        }
-
-        const link = `/cat.html?id=${cat.id}&category=${encodeURIComponent(category)}`;
-        el.innerHTML = `
+      const link = `/cat.html?id=${cat.id}&category=${encodeURIComponent(category)}`;
+      el.innerHTML = `
           <a href="${link}" class="flex flex-col items-center hover:opacity-80 transition p-2">
             <div class="relative w-20 h-20"> 
-              ${
-                category === 'top'
-                  ? `<img
+              ${category === 'top'
+          ? `<img
                        src="/images/crown.png"
                        alt="Krone"
                        class="absolute -top-5 -left-4 w-10 h-13 z-13"
                      />`
-                  : ''
-              }
+          : ''
+        }
               <img
                 src="${cat.image_url}"
                 alt="${cat.name}"
@@ -285,59 +262,60 @@
               <p class="text-sm text-gray-700">${votes} ${voteLabel}</p>
             </div>
           </a>`;
+    }
+
+    async function loadLeaderboardSections() {
+      const top = await (await fetch('/api/leaderboard/top')).json();
+      renderCat(document.getElementById('topCutest'), top, 'top');
+
+      const year = await (await fetch('/api/leaderboard/year')).json();
+      renderCat(document.getElementById('yearCat'), year, 'year');
+
+      const month = await (await fetch('/api/leaderboard/month')).json();
+      renderCat(document.getElementById('monthCat'), month, 'month');
+
+      const day = await (await fetch('/api/leaderboard/day')).json();
+      renderCat(document.getElementById('dayCat'), day, 'day');
+
+      const rand = await (await fetch('/api/leaderboard/random')).json();
+      const randEl = document.getElementById('randomCats');
+      randEl.innerHTML = '';
+      rand.forEach(cat => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'bg-white p-2 rounded flex flex-col items-center';
+        renderCat(wrapper, cat, 'random');
+        randEl.append(wrapper);
+      });
+    }
+
+    async function doSearch() {
+      const q = document.getElementById('searchInput').value.trim();
+      const resEl = document.getElementById('searchResults');
+      resEl.innerHTML = '';
+      if (!q) return;
+      const results = await (await fetch('/api/cat-search?q=' + encodeURIComponent(q))).json();
+      results.forEach(cat => {
+        const div = document.createElement('div');
+        div.className = 'bg-white p-2 rounded flex flex-col items-center';
+        renderCat(div, cat, 'search');
+        resEl.append(div);
+      });
+    }
+
+    // Enter in der Search-Input löst doSearch() aus
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();  // verhindert z.B. unbeabsichtigtes Abschicken eines Formulars
+        doSearch();
       }
+    });
 
-      async function loadLeaderboardSections() {
-        const top    = await (await fetch('/api/leaderboard/top')).json();
-        renderCat(document.getElementById('topCutest'), top, 'top');
+    // initial load
+    loadCats();
+    fetchTotalVotes();
+    setInterval(fetchTotalVotes, 5000);
+  </script>
+</body>
 
-        const year   = await (await fetch('/api/leaderboard/year')).json();
-        renderCat(document.getElementById('yearCat'), year, 'year');
-
-        const month  = await (await fetch('/api/leaderboard/month')).json();
-        renderCat(document.getElementById('monthCat'), month, 'month');
-
-        const day    = await (await fetch('/api/leaderboard/day')).json();
-        renderCat(document.getElementById('dayCat'), day, 'day');
-
-        const rand   = await (await fetch('/api/leaderboard/random')).json();
-        const randEl = document.getElementById('randomCats');
-        randEl.innerHTML = '';
-        rand.forEach(cat => {
-          const wrapper = document.createElement('div');
-          wrapper.className = 'bg-white p-2 rounded flex flex-col items-center';
-          renderCat(wrapper, cat, 'random');
-          randEl.append(wrapper);
-        });
-      }
-
-      async function doSearch() {
-        const q = document.getElementById('searchInput').value.trim();
-        const resEl = document.getElementById('searchResults');
-        resEl.innerHTML = '';
-        if (!q) return;
-        const results = await (await fetch('/api/cat-search?q=' + encodeURIComponent(q))).json();
-        results.forEach(cat => {
-          const div = document.createElement('div');
-          div.className = 'bg-white p-2 rounded flex flex-col items-center';
-          renderCat(div, cat, 'search');
-          resEl.append(div);
-        });
-      }
-
-                // Enter in der Search-Input löst doSearch() aus
-          const searchInput = document.getElementById('searchInput');
-          searchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-              e.preventDefault();  // verhindert z.B. unbeabsichtigtes Abschicken eines Formulars
-              doSearch();
-            }
-          });
-
-      // initial load
-      loadCats();
-      fetchTotalVotes();
-      setInterval(fetchTotalVotes, 5000);
-    </script>
-  </body>
 </html>
