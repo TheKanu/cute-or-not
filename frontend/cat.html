@@ -73,11 +73,13 @@
     <div class="text-center relative w-full md:w-auto">
       <h1 id="catTitle" class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Cat Detail</h1>
 
-      <!-- QR-Code Voting Link (left of the image) -->
+      <!-- QR_Code Voting Link (left of the image) -->
       <div id="voteQR" class="hidden absolute right-full mr-4 sm:mr-6 top-1/2 transform -translate-y-1/2
-                  bg-white rounded-lg shadow-lg p-3 sm:p-4 text-gray-900 text-center">
-        <p class="text-xl sm:text-2xl font-bold mb-2">Join the voting:</p>
-        <img id="qrImg" src="/images/not_cats/qr-code.png" alt="QR Code to vote" class="mx-auto w-32 sm:w-48 h-auto" />
+                  bg-white rounded-lg shadow-lg p-3 sm:p-0 text-gray-900 text-center">
+        <p class="text-xl sm:text-2xl font-bold mb-2">Scan me:</p>
+        <img id="qrImg" src="/images/not_cats/qr_code.png" alt="QR Code to vote"
+          class="mx-auto w-96 sm:w-[128px] md:w-[128px] !max-w-none h-auto" />
+
       </div>
 
       <img id="catImg" src="" alt=""
