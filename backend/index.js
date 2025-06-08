@@ -5,23 +5,63 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import fs from 'fs';
 
 import { query } from './db.js';
 import { saveVote } from './voteService.js';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname  = path.dirname(__filename);
+const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve frontend & images
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
+
+// Serve frontend
 const frontendPath = path.join(__dirname, '..', 'frontend');
 app.use(express.static(frontendPath));
-app.get('/', (req, res) => res.sendFile(path.join(frontendPath, 'index.html')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
+
+// IMPORTANT: Serve images BEFORE other routes
+const imagesPath = path.join(__dirname, 'images');
+const catsImagesPath = path.join(__dirname, 'images', 'cats');
+console.log(`📁 Serving images from: ${imagesPath}`);
+console.log(`   Directory exists: ${fs.existsSync(imagesPath)}`);
+console.log(`📁 Cats images path: ${catsImagesPath}`);
+console.log(`   Directory exists: ${fs.existsSync(catsImagesPath)}`);
+
+// Create images directories if they don't exist
+if (!fs.existsSync(catsImagesPath)) {
+  fs.mkdirSync(catsImagesPath, { recursive: true });
+  console.log('✅ Created images/cats directory');
+}
+
+app.use('/images', express.static(imagesPath, {
+  fallthrough: false,
+  setHeaders: (res, path) => {
+    console.log(`📸 Serving image: ${path}`);
+  }
+}));
+
+// Debug route to check image availability
+app.get('/api/debug/images', (req, res) => {
+  const catsFiles = fs.existsSync(catsImagesPath) ? fs.readdirSync(catsImagesPath) : [];
+  const rootFiles = fs.existsSync(imagesPath) ? fs.readdirSync(imagesPath).filter(f => f !== 'cats') : [];
+  res.json({
+    imagesPath,
+    catsImagesPath,
+    catsCount: catsFiles.length,
+    rootCount: rootFiles.length,
+    catsSamples: catsFiles.slice(0, 10),
+    rootSamples: rootFiles.slice(0, 10)
+  });
+});
 
 // Rate limiter for votes (15 per minute per IP)
 const voteLimiter = rateLimit({
@@ -114,7 +154,7 @@ app.get('/api/leaderboard/year', async (req, res) => {
        c.id,
        c.name,
        c.image_url,
-       COUNT(v.*) AS votes_this_year
+       COUNT(v.*)::int AS votes_this_year
      FROM cats c
      LEFT JOIN votes v
        ON v.cat_id = c.id
@@ -133,7 +173,7 @@ app.get('/api/leaderboard/month', async (req, res) => {
        c.id,
        c.name,
        c.image_url,
-       COUNT(v.*) AS votes_this_month
+       COUNT(v.*)::int AS votes_this_month
      FROM cats c
      LEFT JOIN votes v
        ON v.cat_id = c.id
@@ -152,7 +192,7 @@ app.get('/api/leaderboard/day', async (req, res) => {
        c.id,
        c.name,
        c.image_url,
-       COUNT(v.*) AS votes_today
+       COUNT(v.*)::int AS votes_today
      FROM cats c
      LEFT JOIN votes v
        ON v.cat_id = c.id
@@ -206,6 +246,11 @@ app.get('/api/cat/:id', async (req, res) => {
     console.error('[GET CAT ERROR]', err);
     res.status(500).json({ error: 'Server error' });
   }
+});
+
+// Catch-all route for frontend routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;

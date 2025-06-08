@@ -1,12 +1,16 @@
 {
+  "name": "cute-or-not",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node"
+    "start": "node backend/index.js",
+    "dev": "node --watch backend/index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
     "node-fetch": "^3.3.2",
     "pg": "^8.11.3"
   }
