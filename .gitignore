@@ -69,6 +69,7 @@ out/
 
 # nohup output
 nohup.out
+backend/nohup.out
 
 # PM2
 .pm2/
