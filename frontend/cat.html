@@ -5,95 +5,292 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cat Detail</title>
+  <link rel="icon" type="image/x-icon" href="/images/not_cats/favicon.ico">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
-        extend: { colors: { primary: '#f97316' } },
+        extend: {
+          colors: {
+            primary: '#f97316',
+            softbg: '#1f2937', // Tailwind gray-800
+            softfg: '#facc15'  // Tailwind yellow-400
+          },
+          animation: {
+            pulseFast: 'pulse 0.5s ease-in-out infinite'
+          }
+        },
       },
     };
+
+    document.addEventListener('mousemove', (e) => {
+      const container = document.getElementById('toggleContainer');
+      if (e.clientY < window.innerHeight * 0.2) {
+        container.classList.add('opacity-100', 'pointer-events-auto');
+        container.classList.remove('opacity-0', 'pointer-events-none');
+      } else {
+        container.classList.remove('opacity-100', 'pointer-events-auto');
+        container.classList.add('opacity-0', 'pointer-events-none');
+      }
+    });
   </script>
+  <style>
+    /* Flex-column for vertical units */
+    .vertical-units {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0.5rem;
+    }
+  </style>
 </head>
 
-<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
-  <div class="text-center">
-    <h1 id="catTitle" class="text-5xl font-bold mb-4">Cat Detail</h1>
-    <img id="catImg" src="" alt="" class="mx-auto rounded-lg shadow-lg mb-4 max-h-96" />
-    <p id="catName" class="text-3xl font-semibold mb-2"></p>
-    <p id="catVotes" class="text-lg mb-4"></p>
-    <a href="/" class="bg-primary text-white px-6 py-2 rounded hover:bg-orange-600 transition">Back</a>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center relative p-4">
+  <!-- Toggles -->
+  <div id="toggleContainer"
+    class="absolute top-0 right-0 w-full flex justify-end p-4 opacity-0 transition-opacity duration-300 pointer-events-none">
+    <div class="flex flex-col items-end space-y-2 bg-gray-800 bg-opacity-80 rounded-lg p-3 backdrop-blur-md">
+      <label class="flex items-center cursor-pointer text-sm sm:text-base">
+        <input type="checkbox" id="toggleWeekend" class="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
+        <span>Vis nedtelling til helg</span>
+      </label>
+      <label class="flex items-center cursor-pointer text-sm sm:text-base">
+        <input type="checkbox" id="toggleSeconds" class="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
+        <span>OnlySeconds</span>
+      </label>
+      <label class="flex items-center cursor-pointer text-sm sm:text-base">
+        <input type="checkbox" id="toggleQR" class="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
+        <span>QR-Code for voting</span>
+      </label>
+      <label class="flex items-center cursor-pointer text-sm sm:text-base">
+        <input type="checkbox" id="toggleVertical" class="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
+        <span>Vertikal visning</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="container mx-auto flex flex-col md:flex-row items-center justify-center gap-8 w-full max-w-4xl">
+    <!-- Cat content -->
+    <div class="text-center relative w-full md:w-auto">
+      <h1 id="catTitle" class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Cat Detail</h1>
+
+      <!-- QR-Code Voting Link (left of the image) -->
+      <div id="voteQR" class="hidden absolute right-full mr-4 sm:mr-6 top-1/2 transform -translate-y-1/2
+                  bg-white rounded-lg shadow-lg p-3 sm:p-4 text-gray-900 text-center">
+        <p class="text-xl sm:text-2xl font-bold mb-2">Join the voting:</p>
+        <img id="qrImg" src="/images/not_cats/qr-code.png" alt="QR Code to vote" class="mx-auto w-32 sm:w-48 h-auto" />
+      </div>
+
+      <img id="catImg" src="" alt=""
+        class="mx-auto rounded-lg shadow-lg mb-4 max-h-80 sm:max-h-96 w-full sm:w-auto object-contain" />
+
+      <!-- Countdown / Weekend Celebration (right of the image) -->
+      <div id="weekendCountdown"
+        class="hidden absolute  text-softfg px-4 py-3 rounded-lg shadow-lg text-center flex flex-col items-center justify-center"
+        style="height: auto; width: auto;">
+        <p class="text-lg sm:text-xl font-semibold mb-2">Til helg:</p>
+        <div id="countdownUnits" class="flex flex-row space-x-2">
+          <span id="countdownDays" class="text-4xl sm:text-6xl font-mono"></span>
+          <span id="countdownHours" class="text-4xl sm:text-6xl font-mono"></span>
+          <span id="countdownMinutes" class="text-4xl sm:text-6xl font-mono"></span>
+        </div>
+      </div>
+
+      <p id="catName" class="text-2xl sm:text-3xl font-semibold mt-4 mb-2 truncate"></p>
+      <p id="catVotes" class="text-base sm:text-lg mb-4"></p>
+      <a href="/"
+        class="inline-block bg-primary text-white px-4 sm:px-6 py-2 rounded hover:bg-orange-600 transition text-sm sm:text-base">Back</a>
+    </div>
   </div>
 
   <script>
-    async function loadCat() {
-      const params = new URLSearchParams(window.location.search);
-      const category = params.get('category');   // may be "random"
-      const id = params.get('id');         // always present
+    function getNextFriday330() {
+      const now = new Date();
+      const delta = (5 - now.getDay() + 7) % 7;
+      const target = new Date(now);
+      target.setDate(now.getDate() + delta);
+      target.setHours(15, 30, 0, 0);
+      if (target <= now) target.setDate(target.getDate() + 7);
+      return target;
+    }
 
-      // map for the <h1>
-      const titleMap = {
-        day: 'Cat of the Day',
-        month: 'Monthly Cutest',
-        year: 'Cat of the Year',
-        top: 'Top Cutest Cat',
-        random: 'Random Cat',
-        search: 'Search Result'
-      };
-      const pageTitle = titleMap[category] || 'Cat Detail';
-      document.title = pageTitle;
-      document.getElementById('catTitle').textContent = pageTitle;
+    function isWeekendCelebration() {
+      const now = new Date();
+      const day = now.getDay(), h = now.getHours(), m = now.getMinutes();
+      return (day === 5 && (h > 15 || (h === 15 && m >= 30))) || day === 6 || day === 0;
+    }
 
-      // only these use /api/leaderboard/:cat
-      const singleLB = ['day', 'month', 'year', 'top'];
-      let endpoint;
-      if (singleLB.includes(category)) {
-        endpoint = `/api/leaderboard/${category}`;
-      } else if (id) {
-        endpoint = `/api/cat/${id}`;
-      } else {
-        document.getElementById('catName').textContent = 'Keine Cat ausgewählt';
+    function getBusinessHourDiff(now, target) {
+      const MS = 1000;
+      const WORK_START = 8, WORK_END = 15.5;
+      let totalMs = 0;
+      let cur = new Date(now);
+      const curHour = cur.getHours() + cur.getMinutes() / 60;
+      if (curHour < WORK_START) cur.setHours(WORK_START, 0, 0, 0);
+      else if (curHour >= WORK_END || [0, 6].includes(cur.getDay())) {
+        do { cur.setDate(cur.getDate() + 1); } while ([0, 6].includes(cur.getDay()));
+        cur.setHours(WORK_START, 0, 0, 0);
+      }
+      const end = target;
+      while (cur < end) {
+        if (![0, 6].includes(cur.getDay())) {
+          const dayStart = new Date(cur).setHours(WORK_START, 0, 0, 0);
+          const dayEnd = new Date(cur).setHours(15, 30, 0, 0);
+          const from = Math.max(cur, dayStart);
+          const to = Math.min(end, dayEnd);
+          if (to > from) totalMs += to - from;
+          cur = new Date(Math.max(cur, dayEnd));
+        }
+        if (cur < end) {
+          do { cur.setDate(cur.getDate() + 1); } while ([0, 6].includes(cur.getDay()));
+          cur.setHours(WORK_START, 0, 0, 0);
+        }
+      }
+      return totalMs;
+    }
+
+    function updateCountdown() {
+      const daysEl = document.getElementById('countdownDays');
+      const hoursEl = document.getElementById('countdownHours');
+      const minsEl = document.getElementById('countdownMinutes');
+      if (isWeekendCelebration()) {
+        daysEl.textContent = 'Hooray!'; hoursEl.textContent = ''; minsEl.textContent = '';
+        daysEl.classList.add('animate-pulseFast');
         return;
       }
-
-      try {
-        const res = await fetch(endpoint);
-        if (!res.ok) throw new Error('Not found');
-        const cat = await res.json();
-
-        // debug: see what came back
-        console.log('DETAIL FETCH', category, endpoint, cat);
-
-        // render image + name
-        document.getElementById('catImg').src = cat.image_url;
-        document.getElementById('catImg').alt = cat.name;
-        document.getElementById('catName').textContent = cat.name;
-
-        // pick votes field
-        let votesText;
-        switch (category) {
-          case 'day':
-            votesText = `${cat.votes_today} votes today`;
-            break;
-          case 'month':
-            votesText = `${cat.votes_this_month} votes this month`;
-            break;
-          case 'year':
-            votesText = `${cat.votes_this_year} votes this year`;
-            break;
-          default:
-            votesText = `${cat.total_votes} votes total`;
-        }
-        document.getElementById('catVotes').textContent = votesText;
-      } catch (err) {
-        document.getElementById('catName').textContent = 'Keine Cat gefunden';
-        document.getElementById('catVotes').textContent = '';
-        document.getElementById('catImg').src = '';
-        console.warn(err);
+      daysEl.classList.remove('animate-pulseFast');
+      const now = new Date();
+      const diffMs = getBusinessHourDiff(now, getNextFriday330());
+      const FULL_DAY_MS = 7.5 * 3600 * 1000;
+      if (document.getElementById('toggleSeconds').checked) {
+        daysEl.textContent = `${Math.floor(diffMs / 1000)}s`;
+        hoursEl.textContent = ''; minsEl.textContent = '';
+      } else {
+        const d = Math.floor(diffMs / FULL_DAY_MS);
+        let rem = diffMs % FULL_DAY_MS;
+        const h = Math.floor(rem / (3600 * 1000));
+        rem -= h * 3600 * 1000;
+        const m = Math.floor(rem / (60 * 1000));
+        const pad = n => String(n).padStart(2, '0');
+        daysEl.textContent = `${pad(d)}d`;
+        hoursEl.textContent = `${pad(h)}h`;
+        minsEl.textContent = `${pad(m)}m`;
       }
     }
 
-    loadCat();
-    setInterval(loadCat, 10000);
+    function positionAndResizeCountdown() {
+      const img = document.getElementById('catImg');
+      const box = document.getElementById('weekendCountdown');
+      if (!img || !box) return;
+      // Calculate position relative to parent
+      const parent = img.parentElement;
+      const imgRect = img.getBoundingClientRect();
+      const parentRect = parent.getBoundingClientRect();
+      // Set height equal to image
+      box.style.height = imgRect.height + 'px';
+      // Position box to the right of image, align top edges
+      box.style.top = (imgRect.top - parentRect.top) + 'px';
+      box.style.left = (imgRect.right - parentRect.left + 16) + 'px'; // 16px margin
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleWeekend = document.getElementById('toggleWeekend');
+      const toggleSeconds = document.getElementById('toggleSeconds');
+      const toggleQR = document.getElementById('toggleQR');
+      const toggleVertical = document.getElementById('toggleVertical');
+      const box = document.getElementById('weekendCountdown');
+      let interval;
+
+      toggleWeekend.addEventListener('change', () => {
+        if (toggleWeekend.checked) {
+          box.classList.remove('hidden'); updateCountdown(); positionAndResizeCountdown(); interval = setInterval(updateCountdown, 1000);
+        } else {
+          box.classList.add('hidden'); clearInterval(interval);
+        }
+      });
+      toggleSeconds.addEventListener('change', () => {
+        if (toggleWeekend.checked) { clearInterval(interval); updateCountdown(); interval = setInterval(updateCountdown, 1000); }
+      });
+      toggleQR.addEventListener('change', () => document.getElementById('voteQR').classList.toggle('hidden'));
+      toggleVertical.addEventListener('change', () => {
+        const units = document.getElementById('countdownUnits');
+        units.classList.toggle('vertical-units');
+      });
+
+      const img = document.getElementById('catImg');
+      img.addEventListener('load', () => { positionAndResizeCountdown(); });
+      window.addEventListener('resize', positionAndResizeCountdown);
+
+      async function loadCat() {
+        const params = new URLSearchParams(window.location.search);
+        const category = params.get('category');
+        const id = params.get('id');
+        const catNameEl = document.getElementById('catName');
+        const catVotesEl = document.getElementById('catVotes');
+        const imgEl = document.getElementById('catImg');
+        const titleMap = {
+          day: 'Cat of the Day',
+          month: 'Monthly Cutest',
+          year: 'Cat of the Year',
+          top: 'Top Cutest Cat',
+          random: 'Random Cat',
+          search: 'Search Result'
+        };
+        const pageTitle = titleMap[category] || 'Cat Detail';
+        document.title = pageTitle;
+        document.getElementById('catTitle').textContent = pageTitle;
+
+        let endpoint;
+        const singleLB = ['day', 'month', 'year', 'top'];
+        if (singleLB.includes(category)) {
+          endpoint = `/api/leaderboard/${category}`;
+        } else if (id) {
+          endpoint = `/api/cat/${id}`;
+        } else {
+          catNameEl.textContent = 'Keine Cat ausgewählt';
+          return;
+        }
+
+        try {
+          const res = await fetch(endpoint);
+          if (!res.ok) throw new Error('Not found');
+          const cat = await res.json();
+
+          // Progressive image loading
+          // Use thumbnail_url if available, else fallback to image_url
+          const thumbUrl = cat.thumbnail_url || cat.image_url;
+          imgEl.classList.add('blur-lg', 'transition-filter', 'duration-500');
+          imgEl.src = thumbUrl;
+          imgEl.alt = cat.name;
+
+          // Preload full image
+          const fullImg = new Image();
+          fullImg.src = cat.image_url;
+          fullImg.onload = () => {
+            imgEl.src = fullImg.src;
+            imgEl.classList.remove('blur-lg');
+          };
+
+          catNameEl.textContent = cat.name;
+
+          let votesText;
+          switch (category) {
+            case 'day': votesText = `${cat.votes_today} votes today`; break;
+            case 'month': votesText = `${cat.votes_this_month} votes this month`; break;
+            case 'year': votesText = `${cat.votes_this_year} votes this year`; break;
+            default: votesText = `${cat.total_votes} votes total`;
+          }
+          catVotesEl.textContent = votesText;
+        } catch (err) {
+          catNameEl.textContent = 'Keine Cat gefunden';
+          catVotesEl.textContent = '';
+          imgEl.src = '';
+          console.warn(err);
+        }
+      }
+
+      loadCat();
+      setInterval(loadCat, 10000);
+    });
   </script>
 </body>
 

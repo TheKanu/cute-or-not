@@ -1,317 +1,856 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en" data-theme="default">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Who's the cutest 😺</title>
-  <!-- Tailwind CSS v4 via CDN -->
-  <script src="https://cdn.tailwindcss.com?plugins=typography,forms,aspect-ratio,line-clamp"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#f97316',    /* Orange */
-            secondary: '#facc15',  /* Gelb */
-            background: '#222227',
-          },
-        },
-      },
-    };
-  </script>
+  <title>Who's the Cutest? 😺 - Cat Voting App</title>
+  <link rel="icon" type="image/x-icon" href="/images/not_cats/favicon.ico">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Theme System */
+    :root {
+      --primary: #f97316;
+      --secondary: #fb923c;
+      --accent: #fed7aa;
+      --bg-main: #0f172a;
+      --bg-card: #1e293b;
+      --bg-hover: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --success: #22c55e;
+      --error: #ef4444;
+    }
+
+    [data-theme="ocean"] {
+      --primary: #06b6d4;
+      --secondary: #0891b2;
+      --accent: #67e8f9;
+      --bg-main: #0c1929;
+      --bg-card: #1a2f4a;
+      --bg-hover: #2a4f7a;
+      --text-primary: #e0f2fe;
+      --text-secondary: #bae6fd;
+    }
+
+    [data-theme="sunset"] {
+      --primary: #dc2626;
+      --secondary: #ea580c;
+      --accent: #fbbf24;
+      --bg-main: #1f1b18;
+      --bg-card: #2d2521;
+      --bg-hover: #3d3531;
+      --text-primary: #fef3c7;
+      --text-secondary: #fed7aa;
+    }
+
+    [data-theme="forest"] {
+      --primary: #16a34a;
+      --secondary: #22c55e;
+      --accent: #86efac;
+      --bg-main: #0f1f0f;
+      --bg-card: #1a2f1a;
+      --bg-hover: #2a4f2a;
+      --text-primary: #dcfce7;
+      --text-secondary: #bbf7d0;
+    }
+
+    [data-theme="galaxy"] {
+      --primary: #8b5cf6;
+      --secondary: #a78bfa;
+      --accent: #e9d5ff;
+      --bg-main: #0f0817;
+      --bg-card: #1a0f2e;
+      --bg-hover: #2a1f4e;
+      --text-primary: #f3e8ff;
+      --text-secondary: #e9d5ff;
+    }
+
+    [data-theme="candy"] {
+      --primary: #ec4899;
+      --secondary: #f472b6;
+      --accent: #fbcfe8;
+      --bg-main: #1f0f1b;
+      --bg-card: #2f1f2b;
+      --bg-hover: #4f3f4b;
+      --text-primary: #fce7f3;
+      --text-secondary: #fbcfe8;
+    }
+
+    /* Base Styles */
+    * {
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background Pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image:
+        radial-gradient(circle at 20% 50%, var(--primary) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, var(--secondary) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, var(--accent) 0%, transparent 50%);
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Main Content Layer */
+    .content-layer {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Card Styles */
+    .cat-card {
+      background-color: var(--bg-card);
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cat-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+      border-radius: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
+    .cat-card:hover::before {
+      opacity: 0.5;
+    }
+
+    /* Button Styles */
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--text-primary);
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Vote Button Styles */
+    .vote-button {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vote-button.voted {
+      animation: voteSuccess 0.6s ease;
+    }
+
+    @keyframes voteSuccess {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* Theme Toggle */
+    .theme-bubble {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .theme-bubble:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Floating Hearts Animation */
+    @keyframes float-heart {
+      0% {
+        transform: translateY(0) rotate(-5deg);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-100px) rotate(5deg);
+        opacity: 0;
+      }
+    }
+
+    .floating-heart {
+      position: absolute;
+      animation: float-heart 2s ease-out;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* Leaderboard Styles */
+    .leaderboard-section {
+      background-color: var(--bg-card);
+      border: 1px solid var(--bg-hover);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .leaderboard-cat {
+      background-color: var(--bg-main);
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .leaderboard-cat:hover {
+      background-color: var(--bg-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Crown Animation */
+    .crown {
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(-5deg);
+      }
+
+      50% {
+        transform: translateY(-5px) rotate(5deg);
+      }
+    }
+
+    /* Loading Skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-hover) 50%, var(--bg-card) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-main);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--secondary);
+    }
+
+    /* Stats Counter */
+    .stats-counter {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-hover));
+      border: 1px solid var(--primary);
+      border-radius: 2rem;
+      padding: 1rem 2rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Image Loading State */
+    .cat-img-container {
+      position: relative;
+      overflow: hidden;
+      background-color: var(--bg-hover);
+    }
+
+    .cat-img {
+      transition: all 0.3s ease;
+    }
+
+    .cat-img.loading {
+      filter: blur(10px);
+      transform: scale(1.1);
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(to top, var(--bg-card), transparent);
+      backdrop-filter: blur(10px);
+    }
+  </style>
 </head>
 
-<body class="bg-background text-gray-100 font-sans">
-  <div class="max-w-4xl mx-auto px-4 py-8">
-    <h1 class="text-4xl font-bold text-center text-primary mb-8">
-      Who's the cutest 😺
-    </h1>
-
-    <!-- ✨ Global Votes Counter -->
-    <div id="totalVotes" class="text-center text-lg text-secondary mb-6">
-      Total Votes: 0
-    </div>
-    <div id="error" class="text-red-500 text-center mb-4"></div>
-
-    <!-- Katzen-Voting Grid -->
-    <div id="cat-grid" class="grid grid-cols-2 gap-4 mb-6">
-      <div id="card-left"
-        class="vote-card bg-transparent rounded-xl shadow-md p-4 flex flex-col justify-between items-center h-80 transition-all duration-500 opacity-0">
-        <img id="left" alt="Linke Katze"
-          class="cat-img w-full h-64 object-cover rounded-lg transition-all duration-300" />
-        <button onclick="vote(leftUrl, 'left')"
-          class="w-full bg-primary text-white px-4 py-2 rounded hover:bg-orange-600 transition">
-          Vote 😻
-        </button>
-      </div>
-      <div id="card-right"
-        class="vote-card bg-transparent rounded-xl shadow-md p-4 flex flex-col justify-between items-center h-80 transition-all duration-500 opacity-0">
-        <img id="right" alt="Rechte Katze"
-          class="cat-img w-full h-64 object-cover rounded-lg transition-all duration-300" />
-        <button onclick="vote(rightUrl, 'right')"
-          class="w-full bg-primary text-white px-4 py-2 rounded hover:bg-orange-600 transition">
-          Vote 😻
-        </button>
+<body>
+  <div class="content-layer min-h-screen">
+    <!-- Theme Selector -->
+    <div class="fixed top-4 right-4 z-50">
+      <div class="flex items-center gap-2 bg-opacity-80 backdrop-blur-md rounded-full p-2"
+        style="background-color: var(--bg-card);">
+        <div class="theme-bubble" style="background: linear-gradient(135deg, #f97316, #fed7aa);"
+          onclick="setTheme('default')" title="Default"></div>
+        <div class="theme-bubble" style="background: linear-gradient(135deg, #06b6d4, #67e8f9);"
+          onclick="setTheme('ocean')" title="Ocean"></div>
+        <div class="theme-bubble" style="background: linear-gradient(135deg, #dc2626, #fbbf24);"
+          onclick="setTheme('sunset')" title="Sunset"></div>
+        <div class="theme-bubble" style="background: linear-gradient(135deg, #16a34a, #86efac);"
+          onclick="setTheme('forest')" title="Forest"></div>
+        <div class="theme-bubble" style="background: linear-gradient(135deg, #8b5cf6, #e9d5ff);"
+          onclick="setTheme('galaxy')" title="Galaxy"></div>
+        <div class="theme-bubble" style="background: linear-gradient(135deg, #ec4899, #fbcfe8);"
+          onclick="setTheme('candy')" title="Candy"></div>
       </div>
     </div>
 
-    <!-- Leaderboard Toggle -->
-    <div class="text-center mb-4">
-      <button onclick="toggleLeaderboard()"
-        class="bg-secondary text-black px-6 py-2 rounded hover:bg-yellow-500 transition">
-        🏆 Show Leaderboard
-      </button>
-    </div>
+    <!-- Main Container -->
+    <div class="max-w-6xl mx-auto px-4 py-8">
+      <!-- Header -->
+      <header class="text-center mb-8">
+        <h1
+          class="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] bg-clip-text text-transparent">
+          Who's the Cutest? 😺
+        </h1>
+        <p class="text-xl" style="color: var(--text-secondary);">Vote for your favorite feline friends!</p>
+      </header>
 
-    <!-- Leaderboard Sections -->
-    <div id="leaderboard" class="mt-6 hidden">
-
-      <!-- Top Cutest Cat -->
-      <section class="mb-8 bg-white p-6 rounded-lg">
-        <h2 class="text-2xl font-semibold text-center text-black mb-4">
-          Top Cutest Cat
-        </h2>
-        <div id="topCutest" class="flex justify-center"></div>
-      </section>
-
-      <!-- Cat of the Year / Monthly / Daily -->
-      <section class="grid grid-cols-3 gap-4 mb-8">
-        <div class="bg-white p-4 rounded-lg text-center">
-          <h3 class="font-semibold mb-2 text-black">Cat of the Year</h3>
-          <div id="yearCat" class="flex justify-center"></div>
+      <!-- Stats Counter -->
+      <div class="flex justify-center mb-8">
+        <div class="stats-counter">
+          <span class="mr-2">🏆</span>
+          <span id="totalVotes">0</span> votes cast
         </div>
-        <div class="bg-white p-4 rounded-lg text-center">
-          <h3 class="font-semibold mb-2 text-black">Monthly Cutest</h3>
-          <div id="monthCat" class="flex justify-center"></div>
-        </div>
-        <div class="bg-white p-4 rounded-lg text-center">
-          <h3 class="font-semibold mb-2 text-black">Cat of the Day</h3>
-          <div id="dayCat" class="flex justify-center"></div>
-        </div>
-      </section>
+      </div>
 
-      <!-- 5 Random Cats -->
-      <section class="mb-8">
-        <h2 class="text-2xl font-semibold text-white mb-4">5 Random Cats</h2>
-        <div id="randomCats" class="grid grid-cols-5 gap-4"></div>
-      </section>
+      <!-- Error Message -->
+      <div id="error" class="hidden text-center mb-4 p-4 rounded-lg"
+        style="background-color: var(--error); color: white;"></div>
 
-      <!-- Search Field -->
-      <section class="mb-8">
-        <h2 class="text-2xl font-semibold text-white mb-2">
-          Your cat not displayed?
-        </h2>
-        <div class="flex gap-2 mb-4">
-          <input id="searchInput" type="text" placeholder="Search by name" class="flex-1 p-2 rounded text-black" />
-          <button onclick="doSearch()" class="bg-primary text-white px-4 rounded">
-            Search
+      <!-- Voting Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 relative">
+        <!-- Left Cat Card -->
+        <div id="card-left" class="cat-card rounded-xl p-4 transition-all duration-500">
+          <div class="cat-img-container rounded-lg overflow-hidden mb-4" style="height: 350px;">
+            <img id="left" alt="Left cat" class="cat-img w-full h-full object-cover loading" />
+            <div class="skeleton absolute inset-0" id="left-skeleton"></div>
+          </div>
+          <button onclick="vote(leftUrl, 'left')"
+            class="vote-button w-full py-3 rounded-lg text-white font-semibold text-lg hover:scale-105 transition-transform">
+            Vote Cute 😻
           </button>
         </div>
-        <div id="searchResults" class="grid grid-cols-3 gap-4"></div>
-      </section>
 
+        <!-- VS Divider -->
+        <div class="hidden md:flex absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+          <div
+            class="bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-bold text-2xl rounded-full w-16 h-16 flex items-center justify-center shadow-lg">
+            VS
+          </div>
+        </div>
+
+        <!-- Right Cat Card -->
+        <div id="card-right" class="cat-card rounded-xl p-4 transition-all duration-500">
+          <div class="cat-img-container rounded-lg overflow-hidden mb-4" style="height: 350px;">
+            <img id="right" alt="Right cat" class="cat-img w-full h-full object-cover loading" />
+            <div class="skeleton absolute inset-0" id="right-skeleton"></div>
+          </div>
+          <button onclick="vote(rightUrl, 'right')"
+            class="vote-button w-full py-3 rounded-lg text-white font-semibold text-lg hover:scale-105 transition-transform">
+            Vote Cute 😻
+          </button>
+        </div>
+      </div>
+
+      <!-- Keyboard Hint -->
+      <div class="text-center mb-8" style="color: var(--text-secondary);">
+        <p class="text-sm">💡 Tip: Use arrow keys (← →) for quick voting!</p>
+      </div>
+
+      <!-- Leaderboard Toggle -->
+      <div class="text-center mb-8">
+        <button onclick="toggleLeaderboard()" class="btn-primary text-lg">
+          🏆 Show Leaderboard
+        </button>
+      </div>
+
+      <!-- Leaderboard Container -->
+      <div id="leaderboard" class="hidden">
+        <!-- Top Cutest Cat -->
+        <div class="leaderboard-section">
+          <h2 class="text-3xl font-bold mb-4 text-center" style="color: var(--primary);">
+            👑 All-Time Cutest Cat
+          </h2>
+          <div id="topCutest" class="flex justify-center"></div>
+        </div>
+
+        <!-- Time-based Leaders -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div class="leaderboard-section">
+            <h3 class="text-xl font-semibold mb-3" style="color: var(--secondary);">📅 Cat of the Year</h3>
+            <div id="yearCat"></div>
+          </div>
+          <div class="leaderboard-section">
+            <h3 class="text-xl font-semibold mb-3" style="color: var(--secondary);">📆 Monthly Champion</h3>
+            <div id="monthCat"></div>
+          </div>
+          <div class="leaderboard-section">
+            <h3 class="text-xl font-semibold mb-3" style="color: var(--secondary);">⭐ Today's Star</h3>
+            <div id="dayCat"></div>
+          </div>
+        </div>
+
+        <!-- Random Cats -->
+        <div class="leaderboard-section">
+          <h2 class="text-2xl font-bold mb-4" style="color: var(--primary);">🎲 Discover Random Cuties</h2>
+          <div id="randomCats" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="leaderboard-section">
+          <h2 class="text-2xl font-bold mb-4" style="color: var(--primary);">🔍 Find Your Favorite</h2>
+          <div class="flex gap-3 mb-4">
+            <input id="searchInput" type="text" placeholder="Search by cat name..."
+              class="flex-1 px-4 py-2 rounded-lg outline-none focus:ring-2"
+              style="background-color: var(--bg-main); border: 1px solid var(--bg-hover); color: var(--text-primary);" />
+            <button onclick="doSearch()" class="btn-primary">
+              Search
+            </button>
+          </div>
+          <div id="searchResults" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+        </div>
+      </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 mt-12">
+      <p style="color: var(--text-secondary);">
+        Made with ❤️ • Powered by
+        <a href="https://cataas.com" target="_blank" rel="noopener" class="underline hover:opacity-80"
+          style="color: var(--primary);">
+          CATAAS
+        </a>
+        for providing the cutest cats on the internet
+      </p>
+    </footer>
   </div>
 
-  <footer class="fixed bottom-0 left-0 w-full bg-primary/100 text-white text-center p-1 z-10">
-    <p>
-      ❤️ Thanks to
-      <a href="https://cataas.com" target="_blank" rel="noopener" class="underline hover:text-gray-200">
-        CATAAS
-      </a>
-      for the service of providing the best cats. (All of them)
-    </p>
-  </footer>
-
   <script>
+    // Global variables
     let votingLocked = false;
     let leftUrl, rightUrl;
+    let currentTheme = localStorage.getItem('catVoteTheme') || 'default';
 
+    // Apply saved theme on load
+    document.documentElement.setAttribute('data-theme', currentTheme);
+
+    // Random cat paw cursor
+    (function () {
+      const paws = [
+        'Black1-Cat-Paw.cur',
+        'Black2-Cat-Paw.cur',
+        'Tabby-Cat-Paw.cur',
+        'White-Cat-Paw.cur',
+        'Tan-Cat-Paw.cur',
+        'White-Grey-Cat-Paw.cur',
+      ];
+      const randomPaw = paws[Math.floor(Math.random() * paws.length)];
+      const cursorUrl = `/images/cursor/${randomPaw}`;
+      const style = document.createElement('style');
+      style.textContent = `* { cursor: url('${cursorUrl}') 16 16, auto !important; }`;
+      document.head.appendChild(style);
+    })();
+
+    // Theme switcher
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('catVoteTheme', theme);
+
+      // Add ripple effect
+      const ripple = document.createElement('div');
+      ripple.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: var(--primary);
+        opacity: 0.3;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 9999;
+      `;
+      document.body.appendChild(ripple);
+
+      ripple.animate([
+        { width: '0', height: '0', opacity: 0.3 },
+        { width: '200vmax', height: '200vmax', opacity: 0 }
+      ], {
+        duration: 1000,
+        easing: 'ease-out'
+      }).onfinish = () => ripple.remove();
+    }
+
+    // Keyboard navigation
     document.addEventListener('keydown', e => {
       if (document.activeElement.tagName === 'INPUT') return;
       if (votingLocked) return;
+
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        votingLocked = true;
         vote(leftUrl, 'left');
-      }
-      if (e.key === 'ArrowRight') {
+      } else if (e.key === 'ArrowRight') {
         e.preventDefault();
-        votingLocked = true;
         vote(rightUrl, 'right');
       }
     });
 
+    // Fetch cat image
     async function fetchCat() {
       try {
         const res = await fetch('/api/cat');
         const data = await res.json();
         return data.image_url;
-      } catch {
-        document.getElementById('error').textContent =
-          'Fehler beim Laden der Katze.';
+      } catch (error) {
+        showError('Failed to load cat image. Please try again!');
+        return null;
       }
     }
 
+    // Load cats
     async function loadCats() {
-      const cards = document.querySelectorAll('.vote-card');
       const leftImg = document.getElementById('left');
       const rightImg = document.getElementById('right');
+      const leftSkeleton = document.getElementById('left-skeleton');
+      const rightSkeleton = document.getElementById('right-skeleton');
 
-      cards.forEach(card => card.classList.add('opacity-0'));
-      document.querySelectorAll('.cat-img').forEach(img => {
-        img.classList.remove('ring-4', 'ring-green-500');
-      });
+      // Show skeletons
+      leftSkeleton.style.display = 'block';
+      rightSkeleton.style.display = 'block';
+      leftImg.classList.add('loading');
+      rightImg.classList.add('loading');
 
-      [leftUrl, rightUrl] = await Promise.all([fetchCat(), fetchCat()]);
-      if (leftUrl === rightUrl) return loadCats();
+      // Fetch new cats
+      const [newLeftUrl, newRightUrl] = await Promise.all([fetchCat(), fetchCat()]);
 
+      if (!newLeftUrl || !newRightUrl) return;
+      if (newLeftUrl === newRightUrl) return loadCats(); // Ensure different cats
+
+      leftUrl = newLeftUrl;
+      rightUrl = newRightUrl;
+
+      // Load images
       await Promise.all([
         new Promise(resolve => {
-          leftImg.onload = resolve;
+          leftImg.onload = () => {
+            leftImg.classList.remove('loading');
+            leftSkeleton.style.display = 'none';
+            resolve();
+          };
           leftImg.src = leftUrl;
         }),
         new Promise(resolve => {
-          rightImg.onload = resolve;
+          rightImg.onload = () => {
+            rightImg.classList.remove('loading');
+            rightSkeleton.style.display = 'none';
+            resolve();
+          };
           rightImg.src = rightUrl;
-        }),
+        })
       ]);
 
-      cards.forEach(card => card.classList.remove('opacity-0'));
+      // Fade in animation
+      document.querySelectorAll('.cat-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 100);
+      });
     }
 
-    async function vote(url, imgId) {
+    // Create floating heart
+    function createFloatingHeart(x, y) {
+      const heart = document.createElement('div');
+      heart.className = 'floating-heart';
+      heart.textContent = '❤️';
+      heart.style.left = x + 'px';
+      heart.style.top = y + 'px';
+      heart.style.fontSize = Math.random() * 20 + 20 + 'px';
+      document.body.appendChild(heart);
+
+      setTimeout(() => heart.remove(), 2000);
+    }
+
+    // Vote for cat
+    async function vote(url, side) {
+      if (votingLocked) return;
+      votingLocked = true;
+
+      const button = document.querySelector(`#card-${side} .vote-button`);
+      const card = document.getElementById(`card-${side}`);
+
+      // Visual feedback
+      button.classList.add('voted');
+      card.style.transform = 'scale(1.05)';
+
+      // Create floating hearts
+      const rect = button.getBoundingClientRect();
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          createFloatingHeart(
+            rect.left + Math.random() * rect.width,
+            rect.top
+          );
+        }, i * 100);
+      }
+
       try {
-        const imgEl = document.getElementById(imgId);
-        imgEl.classList.add('ring-4', 'ring-green-500');
+        await fetch('/api/vote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image_url: url, is_cute: true }),
+        });
+
         setTimeout(async () => {
-          await fetch('/api/vote', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image_url: url, is_cute: true }),
-          });
+          card.style.transform = 'scale(1)';
+          button.classList.remove('voted');
           await loadCats();
           fetchTotalVotes();
           votingLocked = false;
-        }, 300);
-      } catch {
-        document.getElementById('error').textContent = 'Fehler beim Voten.';
+        }, 600);
+      } catch (error) {
+        showError('Failed to save vote. Please try again!');
+        card.style.transform = 'scale(1)';
+        button.classList.remove('voted');
         votingLocked = false;
       }
     }
 
-    async function toggleLeaderboard() {
-      const lb = document.getElementById('leaderboard');
-      lb.classList.toggle('hidden');
-      if (!lb.classList.contains('hidden')) {
-        await loadLeaderboardSections();
-      }
+    // Show error message
+    function showError(message) {
+      const errorEl = document.getElementById('error');
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
+      setTimeout(() => errorEl.classList.add('hidden'), 5000);
     }
 
+    // Fetch total votes
     async function fetchTotalVotes() {
       try {
         const res = await fetch('/api/total-votes');
         const { total_votes } = await res.json();
-        document.getElementById(
-          'totalVotes'
-        ).textContent = `Total Votes: ${total_votes}`;
-      } catch {
-        // ignore
+        const counter = document.getElementById('totalVotes');
+
+        // Animate counter
+        const current = parseInt(counter.textContent) || 0;
+        const diff = total_votes - current;
+        const steps = 20;
+        const increment = diff / steps;
+
+        let step = 0;
+        const timer = setInterval(() => {
+          step++;
+          counter.textContent = Math.round(current + increment * step).toLocaleString();
+          if (step >= steps) {
+            clearInterval(timer);
+            counter.textContent = total_votes.toLocaleString();
+          }
+        }, 30);
+      } catch (error) {
+        console.error('Failed to fetch total votes:', error);
       }
     }
 
-    // Renders a cat card, picking the correct vote field
+    // Toggle leaderboard
+    async function toggleLeaderboard() {
+      const lb = document.getElementById('leaderboard');
+      lb.classList.toggle('hidden');
+
+      if (!lb.classList.contains('hidden')) {
+        lb.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        await loadLeaderboardSections();
+      }
+    }
+
+    // Render cat card
     function renderCat(el, cat, category) {
       if (!cat) {
-        el.innerHTML = '<p class="text-gray-400">none</p>';
+        el.innerHTML = `<p style="color: var(--text-secondary);">No cat found yet!</p>`;
         return;
       }
-      // Determine which vote count to show
+
       let votes, voteLabel;
-      if (category === 'day') {
-        votes = cat.votes_today; voteLabel = 'votes today';
-      } else if (category === 'month') {
-        votes = cat.votes_this_month; voteLabel = 'votes this month';
-      } else if (category === 'year') {
-        votes = cat.votes_this_year; voteLabel = 'votes this year';
-      } else {
-        votes = cat.total_votes; voteLabel = 'votes';
+      switch (category) {
+        case 'day':
+          votes = cat.votes_today;
+          voteLabel = 'votes today';
+          break;
+        case 'month':
+          votes = cat.votes_this_month;
+          voteLabel = 'votes this month';
+          break;
+        case 'year':
+          votes = cat.votes_this_year;
+          voteLabel = 'votes this year';
+          break;
+        default:
+          votes = cat.total_votes;
+          voteLabel = 'total votes';
       }
 
       const link = `/cat.html?id=${cat.id}&category=${encodeURIComponent(category)}`;
+
       el.innerHTML = `
-          <a href="${link}" class="flex flex-col items-center hover:opacity-80 transition p-2">
-            <div class="relative w-20 h-20"> 
-              ${category === 'top'
-          ? `<img
-                       src="/images/not_cats/crown.png"
-                       alt="Krone"
-                       class="absolute -top-5 -left-4 w-10 h-13 z-13"
-                     />`
-          : ''
-        }
-              <img
-                src="${cat.image_url}"
-                alt="${cat.name}"
-                class="w-20 h-20 rounded object-cover shadow"
-              />
-            </div>
-            <div class="mt-2 text-center">
-              <p class="font-semibold text-black">${cat.name}</p>
-              <p class="text-sm text-gray-700">${votes} ${voteLabel}</p>
-            </div>
-          </a>`;
+        <a href="${link}" class="leaderboard-cat block text-center group">
+          <div class="relative inline-block mb-2">
+            ${category === 'top' ? `
+              <img src="/images/not_cats/crown.png" alt="Crown" 
+                   class="crown absolute -top-8 left-1/2 transform -translate-x-1/2 w-12 h-12 z-10" />
+            ` : ''}
+            <img src="${cat.image_url}" alt="${cat.name}" 
+                 class="w-24 h-24 rounded-lg object-cover group-hover:scale-110 transition-transform" />
+          </div>
+          <h4 class="font-semibold" style="color: var(--text-primary);">${cat.name}</h4>
+          <p class="text-sm" style="color: var(--text-secondary);">${votes} ${voteLabel}</p>
+        </a>
+      `;
     }
 
+    // Load leaderboard sections
     async function loadLeaderboardSections() {
-      const top = await (await fetch('/api/leaderboard/top')).json();
-      renderCat(document.getElementById('topCutest'), top, 'top');
+      try {
+        const [top, year, month, day, random] = await Promise.all([
+          fetch('/api/leaderboard/top').then(r => r.json()),
+          fetch('/api/leaderboard/year').then(r => r.json()),
+          fetch('/api/leaderboard/month').then(r => r.json()),
+          fetch('/api/leaderboard/day').then(r => r.json()),
+          fetch('/api/leaderboard/random').then(r => r.json())
+        ]);
 
-      const year = await (await fetch('/api/leaderboard/year')).json();
-      renderCat(document.getElementById('yearCat'), year, 'year');
+        renderCat(document.getElementById('topCutest'), top, 'top');
+        renderCat(document.getElementById('yearCat'), year, 'year');
+        renderCat(document.getElementById('monthCat'), month, 'month');
+        renderCat(document.getElementById('dayCat'), day, 'day');
 
-      const month = await (await fetch('/api/leaderboard/month')).json();
-      renderCat(document.getElementById('monthCat'), month, 'month');
-
-      const day = await (await fetch('/api/leaderboard/day')).json();
-      renderCat(document.getElementById('dayCat'), day, 'day');
-
-      const rand = await (await fetch('/api/leaderboard/random')).json();
-      const randEl = document.getElementById('randomCats');
-      randEl.innerHTML = '';
-      rand.forEach(cat => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'bg-white p-2 rounded flex flex-col items-center';
-        renderCat(wrapper, cat, 'random');
-        randEl.append(wrapper);
-      });
+        const randEl = document.getElementById('randomCats');
+        randEl.innerHTML = '';
+        random.forEach(cat => {
+          const wrapper = document.createElement('div');
+          renderCat(wrapper, cat, 'random');
+          randEl.appendChild(wrapper);
+        });
+      } catch (error) {
+        console.error('Failed to load leaderboard:', error);
+      }
     }
 
+    // Search cats
     async function doSearch() {
-      const q = document.getElementById('searchInput').value.trim();
-      const resEl = document.getElementById('searchResults');
-      resEl.innerHTML = '';
-      if (!q) return;
-      const results = await (await fetch('/api/cat-search?q=' + encodeURIComponent(q))).json();
-      results.forEach(cat => {
-        const div = document.createElement('div');
-        div.className = 'bg-white p-2 rounded flex flex-col items-center';
-        renderCat(div, cat, 'search');
-        resEl.append(div);
-      });
+      const query = document.getElementById('searchInput').value.trim();
+      const resultsEl = document.getElementById('searchResults');
+
+      if (!query) {
+        resultsEl.innerHTML = '';
+        return;
+      }
+
+      try {
+        const results = await fetch(`/api/cat-search?q=${encodeURIComponent(query)}`).then(r => r.json());
+
+        resultsEl.innerHTML = '';
+        if (results.length === 0) {
+          resultsEl.innerHTML = `<p style="color: var(--text-secondary);" class="col-span-full text-center">No cats found matching "${query}"</p>`;
+        } else {
+          results.forEach(cat => {
+            const wrapper = document.createElement('div');
+            renderCat(wrapper, cat, 'search');
+            resultsEl.appendChild(wrapper);
+          });
+        }
+      } catch (error) {
+        console.error('Search failed:', error);
+      }
     }
 
-    // Enter in der Search-Input löst doSearch() aus
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('keydown', function (e) {
+    // Enter key search
+    document.getElementById('searchInput').addEventListener('keydown', e => {
       if (e.key === 'Enter') {
-        e.preventDefault();  // verhindert z.B. unbeabsichtigtes Abschicken eines Formulars
+        e.preventDefault();
         doSearch();
       }
     });
 
-    // initial load
+    // Initialize
     loadCats();
     fetchTotalVotes();
     setInterval(fetchTotalVotes, 5000);
