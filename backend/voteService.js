@@ -8,7 +8,8 @@ import { generateUniqueName } from './nameGenerator.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const imagesDir = path.join(__dirname, 'images');
+const imagesDir = path.join(__dirname, 'images', 'cats');
+
 if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir, { recursive: true });
 }
@@ -29,7 +30,7 @@ export async function saveVote(image_url, is_cute) {
     const filename = `${cat.hash}.jpg`;
     const savePath = path.join(imagesDir, filename);
     fs.writeFileSync(savePath, buffer);
-    const localUrl = `/images/${filename}`;
+    const localUrl = `/images/cats/${filename}`;
 
     // b) Namen generieren
     const name = await generateUniqueName();
