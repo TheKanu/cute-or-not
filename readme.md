@@ -27,7 +27,7 @@ Eine unterhaltsame Web-App, bei der Nutzer für die süßesten Katzen abstimmen 
 ### 1. Repository klonen
 
 ```bash
-git clone https://github.com/yourusername/cute-or-not.git
+git clone https://github.com/thekanu/cute-or-not.git
 cd cute-or-not
 ```
 
@@ -344,4 +344,4 @@ MIT License - siehe [LICENSE](LICENSE) für Details
 
 ---
 
-**Probleme?** Erstelle ein [Issue](https://github.com/yourusername/cute-or-not/issues) auf GitHub!
+**Probleme?** Erstelle ein [Issue](https://github.com/thekanu/cute-or-not/issues) auf GitHub!
