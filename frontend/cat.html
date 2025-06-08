@@ -33,6 +33,23 @@
         container.classList.add('opacity-0', 'pointer-events-none');
       }
     });
+
+    // Random cat paw cursor
+    (function () {
+      const paws = [
+        'Black1-Cat-Paw.cur',
+        'Tabby-Cat-Paw.cur',
+        'White-Cat-Paw.cur',
+        'Tan-Cat-Paw.cur',
+        'White-Grey-Cat-Paw.cur',
+      ];
+      const randomPaw = paws[Math.floor(Math.random() * paws.length)];
+      const cursorUrl = `/images/cursor/${randomPaw}`;
+      const style = document.createElement('style');
+      style.textContent = `* { cursor: url('${cursorUrl}') 16 16, auto !important; }`;
+      document.head.appendChild(style);
+    })();
+
   </script>
   <style>
     /* Flex-column for vertical units */
