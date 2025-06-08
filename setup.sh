@@ -1,31 +1,27 @@
 #!/bin/bash
 
-echo "🐱 Setting up Cute or Not Cat Voting App..."
+echo "🧹 Setting up clean directory structure..."
 
-# Check if .env exists
-if [ ! -f .env ]; then
-    echo "📝 Creating .env file from .env.example..."
-    cp .env.example .env
-    echo "⚠️  Please edit .env with your database credentials!"
-    exit 1
+# Create necessary directories
+mkdir -p backend/images/cats
+mkdir -p backend/images/not_cats
+
+# Create .gitkeep files to preserve directory structure
+touch backend/images/.gitkeep
+touch backend/images/not_cats/.gitkeep
+
+# Remove any accidentally committed images
+if [ -d ".git" ]; then
+    echo "📸 Removing cat images from git tracking..."
+    git rm -r --cached backend/images/cats 2>/dev/null || true
+    git rm --cached backend/images/*.jpg 2>/dev/null || true
+    git rm --cached backend/images/*.jpeg 2>/dev/null || true
+    git rm --cached backend/images/*.png 2>/dev/null || true
 fi
 
-# Install dependencies
-echo "📦 Installing dependencies..."
-npm install
-
-# Create images directory
-echo "📁 Creating images directory..."
-mkdir -p backend/images
-
-# Database setup
-echo "🗄️  Setting up database..."
-echo "Please ensure PostgreSQL is running and you have created a database named 'cute_or_not'"
-echo "Run the following SQL commands in your PostgreSQL client:"
+echo "✅ Directory structure ready!"
 echo ""
-echo "CREATE DATABASE cute_or_not;"
-echo ""
-echo "Then run: psql -U your_user -d cute_or_not -f backend/migrations/schema.sql"
-echo ""
-
-echo "✅ Setup complete! Run 'npm start' to start the server."
+echo "Next steps:"
+echo "1. Run: git add .gitignore backend/images/.gitkeep"
+echo "2. Run: git commit -m 'Clean up image directories'"
+echo "3. Run: git push"
