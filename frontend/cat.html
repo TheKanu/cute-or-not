@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cat Detail</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -13,10 +14,11 @@
     };
   </script>
 </head>
+
 <body class="bg-gray-900 text-white flex items-center justify-center h-screen">
   <div class="text-center">
     <h1 id="catTitle" class="text-5xl font-bold mb-4">Cat Detail</h1>
-    <img id="catImg" src="" alt="" class="mx-auto rounded-lg shadow-lg mb-4 max-h-96"/>
+    <img id="catImg" src="" alt="" class="mx-auto rounded-lg shadow-lg mb-4 max-h-96" />
     <p id="catName" class="text-3xl font-semibold mb-2"></p>
     <p id="catVotes" class="text-lg mb-4"></p>
     <a href="/" class="bg-primary text-white px-6 py-2 rounded hover:bg-orange-600 transition">Back</a>
@@ -24,25 +26,25 @@
 
   <script>
     async function loadCat() {
-      const params   = new URLSearchParams(window.location.search);
+      const params = new URLSearchParams(window.location.search);
       const category = params.get('category');   // may be "random"
-      const id       = params.get('id');         // always present
+      const id = params.get('id');         // always present
 
       // map for the <h1>
       const titleMap = {
-        day:   'Cat of the Day',
+        day: 'Cat of the Day',
         month: 'Monthly Cutest',
-        year:  'Cat of the Year',
-        top:   'Top Cutest Cat',
-        random:'Random Cat',
-        search:'Search Result'
+        year: 'Cat of the Year',
+        top: 'Top Cutest Cat',
+        random: 'Random Cat',
+        search: 'Search Result'
       };
       const pageTitle = titleMap[category] || 'Cat Detail';
       document.title = pageTitle;
       document.getElementById('catTitle').textContent = pageTitle;
 
       // only these use /api/leaderboard/:cat
-      const singleLB = ['day','month','year','top'];
+      const singleLB = ['day', 'month', 'year', 'top'];
       let endpoint;
       if (singleLB.includes(category)) {
         endpoint = `/api/leaderboard/${category}`;
@@ -62,8 +64,8 @@
         console.log('DETAIL FETCH', category, endpoint, cat);
 
         // render image + name
-        document.getElementById('catImg').src        = cat.image_url;
-        document.getElementById('catImg').alt        = cat.name;
+        document.getElementById('catImg').src = cat.image_url;
+        document.getElementById('catImg').alt = cat.name;
         document.getElementById('catName').textContent = cat.name;
 
         // pick votes field
@@ -83,7 +85,7 @@
         }
         document.getElementById('catVotes').textContent = votesText;
       } catch (err) {
-        document.getElementById('catName').textContent  = 'Keine Cat gefunden';
+        document.getElementById('catName').textContent = 'Keine Cat gefunden';
         document.getElementById('catVotes').textContent = '';
         document.getElementById('catImg').src = '';
         console.warn(err);
@@ -94,4 +96,5 @@
     setInterval(loadCat, 10000);
   </script>
 </body>
+
 </html>
