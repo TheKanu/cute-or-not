@@ -13,5 +13,8 @@
     "express-rate-limit": "^7.1.5",
     "node-fetch": "^3.3.2",
     "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4.1.8"
   }
 }
