@@ -1,6 +1,6 @@
 # 🐱 Cute or Not - Cat Voting App
 
-Eine unterhaltsame Web-App, bei der Nutzer für die süßesten Katzen abstimmen können! Die App zeigt zufällige Katzenbilder von [CATAAS](https://cataas.com) und ermöglicht es, für die Favoriten zu voten.
+A fun web application where users can vote for the cutest cats! The app displays random cat images from [CATAAS](https://cataas.com) and allows voting for your favorites.
 
 ![Node.js](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%3E%3D12-blue)
@@ -8,78 +8,78 @@ Eine unterhaltsame Web-App, bei der Nutzer für die süßesten Katzen abstimmen 
 
 ## 📸 Screenshots & Features
 
-- **Voting-Interface**: Zwei Katzen im Vergleich - vote mit Klick oder Pfeiltasten
-- **Leaderboards**: Tages-, Monats-, Jahres- und All-Time Champions
-- **Namensgebung**: Jede Katze erhält einen einzigartigen, lustigen Namen
-- **Themes**: 6 verschiedene Farbthemen zur Auswahl
-- **Suchfunktion**: Finde Katzen nach Namen
-- **Rate-Limiting**: Faire Abstimmungen (15 Votes pro Minute)
+- **Voting Interface**: Two cats side-by-side - vote with click or arrow keys
+- **Leaderboards**: Daily, Monthly, Yearly, and All-Time champions
+- **Naming System**: Each cat receives a unique, funny name
+- **Themes**: 6 different color themes to choose from
+- **Search Function**: Find cats by name
+- **Rate Limiting**: Fair voting (15 votes per minute)
 
-## 🚀 Voraussetzungen
+## 🚀 Prerequisites
 
-- **Node.js** v14 oder höher
-- **PostgreSQL** v12 oder höher
-- **npm** oder **yarn**
+- **Node.js** v14 or higher
+- **PostgreSQL** v12 or higher
+- **npm** or **yarn**
 - Git
 
 ## 📦 Installation
 
-### 1. Repository klonen
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/thekanu/cute-or-not.git
 cd cute-or-not
 ```
 
-### 2. Abhängigkeiten installieren
+### 2. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 3. PostgreSQL Datenbank einrichten
+### 3. Set up PostgreSQL Database
 
 ```bash
-# PostgreSQL starten (falls nicht bereits läuft)
+# Start PostgreSQL (if not already running)
 # macOS: brew services start postgresql
 # Linux: sudo systemctl start postgresql
 
-# In PostgreSQL einloggen
+# Login to PostgreSQL
 psql -U postgres
 
-# Datenbank erstellen
+# Create database
 CREATE DATABASE cute_or_not;
 
-# Benutzer erstellen (optional, falls gewünscht)
+# Create user (optional)
 CREATE USER catvoter WITH PASSWORD 'your_secure_password';
 GRANT ALL PRIVILEGES ON DATABASE cute_or_not TO catvoter;
 
-# PostgreSQL verlassen
+# Exit PostgreSQL
 \q
 ```
 
-### 4. Datenbankschema initialisieren
+### 4. Initialize Database Schema
 
 ```bash
-# Mit postgres user
+# With postgres user
 psql -U postgres -d cute_or_not -f backend/migrations/newtables.sql
 
-# ODER mit eigenem user
+# OR with custom user
 psql -U catvoter -d cute_or_not -f backend/migrations/newtables.sql
 ```
 
-### 5. Umgebungsvariablen konfigurieren
+### 5. Configure Environment Variables
 
 ```bash
-# .env Datei erstellen
+# Create .env file
 cp example.env .env
 ```
 
-Bearbeite die `.env` Datei mit deinen Datenbank-Zugangsdaten:
+Edit the `.env` file with your database credentials:
 
 ```env
 # Database Configuration
-DB_USER=catvoter              # oder postgres
+DB_USER=catvoter              # or postgres
 DB_HOST=localhost
 DB_NAME=cute_or_not
 DB_PASSWORD=your_secure_password
@@ -89,187 +89,187 @@ DB_PORT=5432
 PORT=3000
 ```
 
-### 6. Verzeichnisstruktur erstellen
+### 6. Create Directory Structure
 
 ```bash
-# Setup-Script ausführen
+# Run setup script
 chmod +x setup.sh
 ./setup.sh
 
-# ODER manuell:
+# OR manually:
 mkdir -p backend/images/cats
 mkdir -p backend/images/not_cats
 ```
 
-### 7. Server starten
+### 7. Start the Server
 
 ```bash
-# Produktion
+# Production
 npm start
 
-# Entwicklung (mit Auto-Reload)
+# Development (with auto-reload)
 npm run dev
 ```
 
-Die App ist jetzt erreichbar unter: `http://localhost:3000`
+The app is now available at: `http://localhost:3000`
 
-## 🎮 Nutzung
+## 🎮 Usage
 
 ### Voting
 
-1. **Öffne die App** im Browser
-2. **Wähle eine Katze** durch Klick auf den "Vote Cute" Button
-3. **Keyboard-Shortcuts**: 
-   - `←` (Pfeil links): Vote für linke Katze
-   - `→` (Pfeil rechts): Vote für rechte Katze
+1. **Open the app** in your browser
+2. **Choose a cat** by clicking the "Vote Cute" button
+3. **Keyboard shortcuts**: 
+   - `←` (Left arrow): Vote for left cat
+   - `→` (Right arrow): Vote for right cat
 
-### Themes ändern
+### Change Themes
 
-Klicke auf die **farbigen Kreise** oben rechts, um zwischen 6 verschiedenen Themes zu wechseln:
+Click the **colored circles** in the top right to switch between 6 different themes:
 - 🟠 Default (Orange)
-- 🔵 Ocean (Blau)
-- 🔴 Sunset (Rot)
-- 🟢 Forest (Grün)
-- 🟣 Galaxy (Violett)
+- 🔵 Ocean (Blue)
+- 🔴 Sunset (Red)
+- 🟢 Forest (Green)
+- 🟣 Galaxy (Purple)
 - 🩷 Candy (Pink)
 
 ### Leaderboard
 
-Klicke auf **"🏆 Show Leaderboard"** um zu sehen:
-- 👑 **All-Time Cutest Cat**: Die Katze mit den meisten Votes insgesamt
-- 📅 **Cat of the Year**: Jahres-Champion
-- 📆 **Monthly Champion**: Monats-Sieger
-- ⭐ **Today's Star**: Tages-Gewinner
-- 🎲 **Random Cuties**: 5 zufällige Katzen zum Entdecken
+Click **"🏆 Show Leaderboard"** to see:
+- 👑 **All-Time Cutest Cat**: The cat with the most votes overall
+- 📅 **Cat of the Year**: Annual champion
+- 📆 **Monthly Champion**: Monthly winner
+- ⭐ **Today's Star**: Daily winner
+- 🎲 **Random Cuties**: 5 random cats to discover
 
-### Katzen suchen
+### Search for Cats
 
-1. Öffne das Leaderboard
-2. Scrolle zur **Suchsektion**
-3. Gib einen Namen oder Teil eines Namens ein
-4. Drücke Enter oder klicke "Search"
+1. Open the leaderboard
+2. Scroll to the **search section**
+3. Enter a name or part of a name
+4. Press Enter or click "Search"
 
-### Katzen-Detailseite
+### Cat Detail Page
 
-Klicke auf eine Katze im Leaderboard, um ihre Detailseite zu sehen mit:
-- Großem Bild
-- Vollständigem Namen
-- Vote-Statistiken
+Click on any cat in the leaderboard to see its detail page with:
+- Large image
+- Full name
+- Vote statistics
 
-## 🛠️ Konfiguration
+## 🛠️ Configuration
 
-### Datenbank-Verbindung
+### Database Connection
 
-Die Datenbank-Verbindung wird über Umgebungsvariablen in `.env` konfiguriert. Stelle sicher, dass PostgreSQL läuft und die Zugangsdaten korrekt sind.
+Database connection is configured via environment variables in `.env`. Ensure PostgreSQL is running and credentials are correct.
 
-### Port ändern
+### Change Port
 
-Standardmäßig läuft die App auf Port 3000. Ändern kannst du das in `.env`:
+By default, the app runs on port 3000. You can change this in `.env`:
 
 ```env
 PORT=8080
 ```
 
-### Rate-Limiting anpassen
+### Adjust Rate Limiting
 
-In `backend/index.js` findest du die Rate-Limit-Konfiguration:
+In `backend/index.js` you'll find the rate limit configuration:
 
 ```javascript
 const voteLimiter = rateLimit({
-  windowMs: 60 * 1000,    // 1 Minute
-  max: 15,                // Max 15 Votes pro Minute
+  windowMs: 60 * 1000,    // 1 minute
+  max: 15,                // Max 15 votes per minute
 });
 ```
 
-## 🗂️ Projektstruktur
+## 🗂️ Project Structure
 
 ```
 cute-or-not/
 ├── backend/
-│   ├── images/           # Gespeicherte Katzenbilder
-│   │   ├── cats/        # Voting-Katzenbilder (ignoriert von Git)
-│   │   └── not_cats/    # Statische Assets (Icons, etc.)
-│   ├── migrations/      # SQL-Migrations
-│   ├── names/          # Wortlisten für Namensgenerierung
-│   ├── index.js        # Express Server
-│   ├── db.js          # Datenbank-Verbindung
-│   ├── catService.js  # Katzen-Verwaltung
-│   ├── voteService.js # Vote-Verarbeitung
-│   └── nameGenerator.js # Namens-Generierung
+│   ├── images/           # Stored cat images
+│   │   ├── cats/        # Voting cat images (ignored by Git)
+│   │   └── not_cats/    # Static assets (icons, etc.)
+│   ├── migrations/      # SQL migrations
+│   ├── names/          # Word lists for name generation
+│   ├── index.js        # Express server
+│   ├── db.js          # Database connection
+│   ├── catService.js  # Cat management
+│   ├── voteService.js # Vote processing
+│   └── nameGenerator.js # Name generation
 ├── frontend/
-│   ├── index.html     # Hauptseite
-│   └── cat.html       # Katzen-Detailseite
-├── .env               # Umgebungsvariablen (nicht in Git)
-├── .gitignore        # Git-Ignores
-├── package.json      # NPM Dependencies
-└── README.md         # Diese Datei
+│   ├── index.html     # Main page
+│   └── cat.html       # Cat detail page
+├── .env               # Environment variables (not in Git)
+├── .gitignore        # Git ignores
+├── package.json      # NPM dependencies
+└── README.md         # This file
 ```
 
 ## 🔧 Troubleshooting
 
-### "Datenbank-Verbindung fehlgeschlagen"
+### "Database connection failed"
 
-1. Überprüfe, ob PostgreSQL läuft:
+1. Check if PostgreSQL is running:
    ```bash
    # macOS/Linux
    ps aux | grep postgres
    
-   # Oder mit systemctl
+   # Or with systemctl
    sudo systemctl status postgresql
    ```
 
-2. Teste die Verbindung:
+2. Test the connection:
    ```bash
    psql -U your_user -d cute_or_not -c "SELECT 1;"
    ```
 
-3. Überprüfe die `.env` Datei auf Tippfehler
+3. Check `.env` file for typos
 
-### "Bilder werden nicht angezeigt"
+### "Images not displaying"
 
-1. Stelle sicher, dass das `backend/images/cats/` Verzeichnis existiert
-2. Überprüfe die Schreibrechte:
+1. Ensure the `backend/images/cats/` directory exists
+2. Check write permissions:
    ```bash
    ls -la backend/images/
    ```
-3. Schaue in die Server-Logs für Fehler
+3. Check server logs for errors
 
-### "Too many votes" Fehler
+### "Too many votes" error
 
-Das ist das Rate-Limiting. Warte eine Minute und versuche es erneut.
+This is rate limiting in action. Wait a minute and try again.
 
-### Datenbank zurücksetzen
+### Reset Database
 
 ```bash
-# VORSICHT: Löscht alle Daten!
+# WARNING: This deletes all data!
 psql -U your_user -d cute_or_not
 
 DROP TABLE IF EXISTS votes CASCADE;
 DROP TABLE IF EXISTS cats CASCADE;
 
-# Dann schema neu laden
+# Then reload schema
 \i backend/migrations/newtables.sql
 ```
 
 ## 🚀 Deployment
 
-### Mit PM2 (empfohlen)
+### With PM2 (recommended)
 
 ```bash
-# PM2 installieren
+# Install PM2
 npm install -g pm2
 
-# App starten
+# Start app
 pm2 start backend/index.js --name cute-or-not
 
-# Auto-Start einrichten
+# Set up auto-start
 pm2 startup
 pm2 save
 ```
 
-### Mit systemd
+### With systemd
 
-Erstelle `/etc/systemd/system/cute-or-not.service`:
+Create `/etc/systemd/system/cute-or-not.service`:
 
 ```ini
 [Unit]
@@ -293,7 +293,7 @@ sudo systemctl enable cute-or-not
 sudo systemctl start cute-or-not
 ```
 
-### Reverse Proxy mit Nginx
+### Reverse Proxy with Nginx
 
 ```nginx
 server {
@@ -311,37 +311,37 @@ server {
 }
 ```
 
-## 📊 Datenbank-Schema
+## 📊 Database Schema
 
-### Tabelle: cats
+### Table: cats
 - `id` - Primary Key
-- `hash` - SHA256 Hash des Bildes (unique)
-- `image_url` - Lokale URL des gespeicherten Bildes
-- `name` - Generierter Name
-- `cute_score` - Anzahl "cute" Votes
-- `total_votes` - Gesamtzahl Votes
-- `created_at` - Erstellungszeitpunkt
+- `hash` - SHA256 hash of the image (unique)
+- `image_url` - Local URL of the stored image
+- `name` - Generated name
+- `cute_score` - Number of "cute" votes
+- `total_votes` - Total number of votes
+- `created_at` - Creation timestamp
 
-### Tabelle: votes
+### Table: votes
 - `id` - Primary Key
-- `cat_id` - Foreign Key zu cats
-- `is_cute` - Boolean (für zukünftige "not cute" Option)
-- `created_at` - Vote-Zeitpunkt
+- `cat_id` - Foreign Key to cats
+- `is_cute` - Boolean (for future "not cute" option)
+- `created_at` - Vote timestamp
 
-## 🤝 Beitragen
+## 🤝 Contributing
 
-Pull Requests sind willkommen! Für größere Änderungen, erstelle bitte zuerst ein Issue.
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
-## 📝 Lizenz
+## 📝 License
 
-MIT License - siehe [LICENSE](LICENSE) für Details
+MIT License - see [LICENSE](LICENSE) for details
 
 ## 🙏 Credits
 
-- Katzenbilder von [CATAAS](https://cataas.com) - Cat as a Service
-- Icons und Styling mit [Tailwind CSS](https://tailwindcss.com)
-- Inspiriert von der Liebe zu Katzen 🐱
+- Cat images from [CATAAS](https://cataas.com) - Cat as a Service
+- Icons and styling with [Tailwind CSS](https://tailwindcss.com)
+- Inspired by the love of cats 🐱
 
 ---
 
-**Probleme?** Erstelle ein [Issue](https://github.com/thekanu/cute-or-not/issues) auf GitHub!
+**Having issues?** Create an [Issue](https://github.com/thekanu/cute-or-not/issues) on GitHub!
