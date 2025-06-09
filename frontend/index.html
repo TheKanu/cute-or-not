@@ -703,6 +703,10 @@
       setTimeout(() => errorEl.classList.add('hidden'), 5000);
     }
 
+    // Track current vote count
+    let currentVoteCount = 0;
+    let isFirstLoad = true;
+
     // Fetch total votes
     async function fetchTotalVotes() {
       try {
@@ -710,21 +714,47 @@
         const { total_votes } = await res.json();
         const counter = document.getElementById('totalVotes');
 
-        // Animate counter
-        const current = parseInt(counter.textContent) || 0;
-        const diff = total_votes - current;
-        const steps = 20;
-        const increment = diff / steps;
+        // Only animate on first load or when votes actually changed
+        if (isFirstLoad) {
+          // First load - animate from 0
+          const steps = 30;
+          const increment = total_votes / steps;
+          let step = 0;
 
-        let step = 0;
-        const timer = setInterval(() => {
-          step++;
-          counter.textContent = Math.round(current + increment * step).toLocaleString();
-          if (step >= steps) {
-            clearInterval(timer);
-            counter.textContent = total_votes.toLocaleString();
-          }
-        }, 30);
+          const timer = setInterval(() => {
+            step++;
+            const value = Math.round(increment * step);
+            counter.textContent = value.toLocaleString();
+            if (step >= steps) {
+              clearInterval(timer);
+              counter.textContent = total_votes.toLocaleString();
+              currentVoteCount = total_votes;
+            }
+          }, 20);
+
+          isFirstLoad = false;
+        } else if (total_votes > currentVoteCount) {
+          // Votes increased - quick animation for the difference
+          const diff = total_votes - currentVoteCount;
+          const steps = Math.min(diff * 2, 10); // Quick animation
+          const increment = diff / steps;
+          let step = 0;
+
+          const timer = setInterval(() => {
+            step++;
+            const value = currentVoteCount + Math.round(increment * step);
+            counter.textContent = value.toLocaleString();
+            if (step >= steps) {
+              clearInterval(timer);
+              counter.textContent = total_votes.toLocaleString();
+              currentVoteCount = total_votes;
+            }
+          }, 30);
+        } else {
+          // No change or decrease - just update
+          counter.textContent = total_votes.toLocaleString();
+          currentVoteCount = total_votes;
+        }
       } catch (error) {
         console.error('Failed to fetch total votes:', error);
       }
@@ -774,7 +804,7 @@
           <div class="relative inline-block mb-2">
             ${category === 'top' ? `
               <img src="/images/not_cats/crown.png" alt="Crown" 
-                   class="crown absolute -top-8 left-1/2 transform -translate-x-1/2 w-12 h-12 z-10" />
+                   class="crown absolute -top-8 transform -translate-x-1/2 w-12 h-12 z-10" />
             ` : ''}
             <img src="${cat.image_url}" alt="${cat.name}" 
                  class="w-24 h-24 rounded-lg object-cover group-hover:scale-110 transition-transform" />
