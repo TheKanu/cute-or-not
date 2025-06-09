@@ -25,7 +25,8 @@
 
     document.addEventListener('mousemove', (e) => {
       const container = document.getElementById('toggleContainer');
-      if (e.clientY < window.innerHeight * 0.2) {
+      const threshold = window.innerWidth * 0.8;
+      if (e.clientX > threshold) {
         container.classList.add('opacity-100', 'pointer-events-auto');
         container.classList.remove('opacity-0', 'pointer-events-none');
       } else {
